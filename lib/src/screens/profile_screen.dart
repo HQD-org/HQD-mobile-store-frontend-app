@@ -1,21 +1,53 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:mobile_store/src/common/shared_preference_user.dart';
 import 'package:mobile_store/src/widgets/header_widget.dart';
+import 'package:http/http.dart' as http;
 
 class ProfileScreen extends StatefulWidget {
+  String repoUser;
+  ProfileScreen({required this.repoUser});
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _ProfileScreenState();
   }
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
   double _drawerIconSize = 24;
+  var token = UserSharedPreference.getAccessToken();
+  getDataUser(int value) {
+    // 1: Name
+    // 2: phone
+    // 3: email
+    // 4: address
+    var data = jsonDecode(widget.repoUser);
+    var name = data['data']['user']['name'];
+    var email = data['data']['user']['email'];
+    var phone = data['data']['user']['phone'];
+    var address = data['data']['user']['address']['detail'];
+    var province = data['data']['user']['address']['province'];
+    //print('${data['data']['user']['address']['detail']}');
+    switch (value) {
+      case 1:
+        return name;
+      case 2:
+        return phone;
+      case 3:
+        return email;
+      case 4:
+        return address + ",  " + province;
+      default:
+        return "Not known";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: (AppBar(
         backgroundColor: Theme.of(context).primaryColor,
@@ -93,7 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 child: Container(
                   child: Text(
-                    "Phungvinhduc3@gmail.com",
+                    "${getDataUser(3)}",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -156,7 +188,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 20.0,
                   ),
                   Text(
-                    "DucDuc",
+                    getDataUser(1),
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
@@ -188,17 +220,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         horizontal: 12, vertical: 4),
                                     leading: Icon(Icons.my_location),
                                     title: Text("Location"),
-                                    subtitle: Text("Việt Nam"),
+                                    subtitle: Text("${getDataUser(4)}"),
+                                    onTap: () {},
                                   ),
                                   ListTile(
                                     leading: Icon(Icons.email),
                                     title: Text("Email"),
-                                    subtitle: Text("Phungvinhduc3@gmail.com"),
+                                    subtitle: Text("${getDataUser(3)}"),
                                   ),
                                   ListTile(
                                     leading: Icon(Icons.phone),
                                     title: Text("Phone"),
-                                    subtitle: Text("0923105984"),
+                                    subtitle: Text("${getDataUser(2)}"),
                                   ),
                                 ],
                               ),
@@ -216,4 +249,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+
+  // khúc này bắt getAuth API
+  Future<http.Response> getAuthAPI() async {
+    var url = 'hqd-mobile-store-api.herokuapp.com';
+    var token = UserSharedPreference.getAccessToken();
+    // Authorization
+    var response = await http.get(Uri.https(url, "/auth/get-auth"), headers: {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+      "Authorization": "Bearer $token",
+    });
+    return response;
+  }
 }
+
+
+// var status = await getAuthAPI();
+//print('getAuth: ${status.statusCode}');
+//if (status.statusCode == 200) {
+//var data = jsonDecode(status.body);
+//print('${status.body}');
+//} else if (status.statusCode == 403) {
+//print("lỗi getAuth");
+//} else {
+//print("Lỗi getAuthen");
+//}

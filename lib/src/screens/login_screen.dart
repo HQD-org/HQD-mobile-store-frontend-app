@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:mobile_store/src/common/shared_preference_user.dart';
 import 'package:mobile_store/src/common/theme_helper.dart';
+import 'package:mobile_store/src/controllers/user_controller.dart';
 import 'package:mobile_store/src/screens/forgot_password_screen.dart';
 import 'package:mobile_store/src/screens/profile_screen.dart';
 import 'package:mobile_store/src/screens/registration_screen.dart';
+import 'package:mobile_store/src/screens/vetification_screen.dart';
 import 'package:mobile_store/src/widgets/header_widget.dart';
+import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -17,9 +23,19 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   var _headerHeight = 250.0;
-  Key _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   TextEditingController email = new TextEditingController();
   TextEditingController pass = new TextEditingController();
+
+// snackBar Widget
+  snackBar(String? message) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message!),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,16 +75,28 @@ class _LoginScreenState extends State<LoginScreen> {
                         key: _formKey,
                         child: Column(
                           children: [
-                            TextField(
+                            TextFormField(
                               controller: email,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Email not empty";
+                                }
+                                return null;
+                              },
                               decoration: ThemeHelper()
                                   .textInputDecoration("Email", "Enter Email"),
                             ),
                             SizedBox(
                               height: 10.0,
                             ),
-                            TextField(
+                            TextFormField(
                               controller: pass,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Password not empty";
+                                }
+                                return null;
+                              },
                               decoration: ThemeHelper().textInputDecoration(
                                   "Password", "Enter Password"),
                               obscureText: true,
@@ -89,12 +117,75 @@ class _LoginScreenState extends State<LoginScreen> {
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white),
                                 ),
-                                onPressed: () {
-                                  print("email: " + email.text);
-                                  print("Password: " + pass.text);
-                                  // chuyển sang trang Profile
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => ProfileScreen()));
+                                onPressed: () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    print("email: " + email.text);
+                                    print("Password: " + pass.text);
+                                    var status = await LoginAPI();
+                                    if (status.statusCode == 200) {
+                                      var dataResponse =
+                                          jsonDecode(status.body);
+                                      UserSharedPreference.setAccessToken(
+                                          dataResponse['data']['accessToken']);
+                                      print(UserSharedPreference
+                                          .getAccessToken());
+
+                                      // bắt getAuth API khúc này
+                                      var token =
+                                          UserSharedPreference.getAccessToken();
+                                      var dataAuth = await UserController()
+                                          .getDataAuth(token);
+                                      String user = dataAuth.toString();
+                                      //jsonDecode(dataAuth).toString();
+                                      print('Login: $user');
+                                      // chuyển sang trang Profile
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ProfileScreen(
+                                                    repoUser: user,
+                                                  )));
+                                    } else if (status.statusCode == 401) {
+                                      // khúc này yêu cầu người dùng verify tài khoản trước khi Login
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: Text('Verify account'),
+                                              content: Text(
+                                                  'Please Press "OK" Verify Account'),
+                                              actions: [
+                                                TextButton(
+                                                  child: Text(
+                                                    "OK",
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ),
+                                                  style: ButtonStyle(
+                                                      backgroundColor:
+                                                          MaterialStateProperty
+                                                              .all(Colors
+                                                                  .black38)),
+                                                  onPressed: () {
+                                                    Navigator.of(context).push(
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                PinCodeVerificationScreen(
+                                                                    email
+                                                                        .text)));
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          });
+                                      //snackBar("Please Verify Account");
+                                    } else if (status.statusCode == 404 ||
+                                        status.statusCode == 400) {
+                                      snackBar("Email not exits");
+                                    } else if (status.statusCode == 403) {
+                                      snackBar("Password incorrect");
+                                    }
+                                  }
                                 },
                               ),
                             ),
@@ -132,5 +223,24 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  // Bắt API login
+  Future<http.Response> LoginAPI() async {
+    var url = 'hqd-mobile-store-api.herokuapp.com';
+    Map dataBody = {
+      "username": email.text,
+      "password": pass.text,
+    };
+    var response = await http.post(Uri.https(url, '/auth/login'),
+        body: jsonEncode(dataBody),
+        headers: {
+          "Content-type": "application/json",
+          "Accept": "application/json",
+        });
+
+    //print("data: ${dataResponse['data']['accessToken']}");
+    print("${response.statusCode}");
+    return response;
   }
 }

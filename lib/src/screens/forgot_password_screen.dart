@@ -1,14 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_store/src/common/theme_helper.dart';
 import 'package:mobile_store/src/screens/forgot_password_vetification_screen.dart';
 import 'package:mobile_store/src/screens/vetification_screen.dart';
 import 'package:mobile_store/src/widgets/header_widget.dart';
+import 'package:http/http.dart' as http;
 
 class ForgotPasswordScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _ForgotPasswordScreen();
   }
 }
@@ -17,6 +19,14 @@ class _ForgotPasswordScreen extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController email = new TextEditingController();
+  snackBar(String? message) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message!),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,15 +129,20 @@ class _ForgotPasswordScreen extends State<ForgotPasswordScreen> {
                                     ),
                                   ),
                                 ),
-                                onPressed: () {
+                                onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              PinCodeVerificationScreen(
-                                                  email.text)),
-                                    );
+                                    var status = await forgotPasswordAPI();
+                                    if (status.statusCode == 404) {
+                                      snackBar("Account not exist");
+                                    } else if (status.statusCode == 200) {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                PinCodeVerificationScreen(
+                                                    email.text.trim())),
+                                      );
+                                    }
                                   }
                                 },
                               ),
@@ -142,5 +157,20 @@ class _ForgotPasswordScreen extends State<ForgotPasswordScreen> {
             ],
           ),
         ));
+  }
+
+  // bắt API ForgotPassWord
+  Future<http.Response> forgotPasswordAPI() async {
+    var url = 'hqd-mobile-store-api.herokuapp.com';
+    Map dataBody = {"uername": email.text.trim()};
+    var response = await http.post(Uri.https(url, "/auth/forgotPassword"),
+        body: jsonEncode(dataBody),
+        headers: {
+          "Content-type": "application/json",
+          "Accept": "application/json",
+        });
+    print('StatusCode forgotPass: ${response.statusCode}');
+    //print("email: ${jsonEncode(response.body)}");
+    return response;
   }
 }

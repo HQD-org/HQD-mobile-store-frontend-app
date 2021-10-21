@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:mobile_store/src/screens/login_screen.dart';
 import 'package:mobile_store/src/widgets/header_widget.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PinCodeVerificationScreen extends StatefulWidget {
   final String? emailCurrent;
@@ -174,7 +178,7 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Text(
-                  hasError ? "*Please fill up all the cells properly" : "",
+                  hasError ? "*OTP not correct" : "",
                   style: TextStyle(
                       color: Colors.red,
                       fontSize: 12,
@@ -211,21 +215,31 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                 child: ButtonTheme(
                   height: 50,
                   child: TextButton(
-                    onPressed: () {
+                    onPressed: () async {
                       formKey.currentState!.validate();
-                      // conditions for validating
-                      if (currentText.length != 4 || currentText != "1234") {
+                      // conditions for validating => currentText.length != 4 || currentText != "1234"
+                      var checkVerifyAPI = await verifyAPI();
+                      print("checkvalue: ${checkVerifyAPI.statusCode}");
+                      // ignore: unrelated_type_equality_checks
+                      if (checkVerifyAPI.statusCode == 400) {
                         // sau này có mã code thì thay thế ở đây khúc 1234
+                        print("StatusCode Verify !200");
                         errorController!.add(ErrorAnimationType
                             .shake); // Triggering error shake animation
                         setState(() => hasError = true);
-                      } else {
+                        // ignore: unrelated_type_equality_checks
+                      } else if (checkVerifyAPI.statusCode == 200) {
+                        print("StatusCode Verify 200");
                         setState(
                           () {
                             hasError = false;
                             snackBar("OTP Verified!!");
                           },
                         );
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => LoginScreen()));
+                      } else {
+                        snackBar("OTP not correct");
                       }
                     },
                     child: Center(
@@ -266,14 +280,14 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                     },
                   )),
                   Flexible(
-                      child: TextButton(
-                    child: Text("Set Text"),
-                    onPressed: () {
-                      setState(() {
-                        textEditingController.text = "1234";
-                      });
-                    },
-                  )),
+                    child: TextButton(
+                      child: Text("Login now"),
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => LoginScreen()));
+                      },
+                    ),
+                  ),
                 ],
               )
             ],
@@ -281,5 +295,23 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
         ),
       ),
     );
+  }
+
+  // khúc này bắt API verify tài khoản
+  Future<http.Response> verifyAPI() async {
+    String url = 'hqd-mobile-store-api.herokuapp.com';
+    String? username = widget.emailCurrent;
+    //print("username: $widget.usernameCurrent");
+    Map dataVerify = {"username": username, "otp": textEditingController.text};
+    var response = await http.post(Uri.https(url, '/auth/verify'),
+        body: jsonEncode(dataVerify),
+        headers: {
+          "Content-type": "application/json",
+          "Accept": "application/json",
+        });
+    var data = jsonDecode(response.body);
+    print(
+        "verify code: ${data['message']['ENG']} and status: ${response.statusCode}");
+    return response;
   }
 }

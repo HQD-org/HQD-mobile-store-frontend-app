@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:email_validator/email_validator.dart';
@@ -5,17 +7,19 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:mobile_store/src/common/theme_helper.dart';
+import 'package:mobile_store/src/controllers/location_controller.dart';
 import 'package:mobile_store/src/models/district.dart';
 import 'package:mobile_store/src/models/province.dart';
 import 'package:mobile_store/src/models/village.dart';
 import 'package:mobile_store/src/screens/login_screen.dart';
-import 'package:mobile_store/src/screens/profile_screen.dart';
+
+import 'package:mobile_store/src/screens/vetification_screen.dart';
 import 'package:mobile_store/src/widgets/header_widget.dart';
+import 'package:http/http.dart' as http;
 
 class RegistrationScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _RegistrationScreenState();
   }
 }
@@ -24,10 +28,26 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
   bool checkedValue = false;
   bool checkboxValue = false;
+  TextEditingController name = new TextEditingController();
+  TextEditingController email = new TextEditingController();
+  TextEditingController phone = new TextEditingController();
+  TextEditingController addressDetail = new TextEditingController();
+  String province = "";
+  String district = "";
+  String village = "";
   TextEditingController pass = new TextEditingController();
   String idProvince = "";
   String idDistrict = "";
   bool _isObscure = true;
+
+  snackBar(String? message) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message!),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +112,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           child: TextFormField(
                             decoration: ThemeHelper().textInputDecoration(
                                 'Fullname', 'Enter your Fullname'),
+                            controller: name,
+                            validator: (val) {
+                              if (val!.isEmpty) {
+                                return 'Enter fullname';
+                              }
+                              if (RegExp('^[a-zA-Z]').hasMatch(val)) {
+                                return 'Invalid fullname';
+                              }
+                              return null;
+                            },
                           ),
                           decoration: ThemeHelper().inputBoxDecorationShaddow(),
                         ),
@@ -102,6 +132,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           child: TextFormField(
                             decoration: ThemeHelper().textInputDecoration(
                                 'Address', 'Enter your Address'),
+                            controller: addressDetail,
                           ),
                           decoration: ThemeHelper().inputBoxDecorationShaddow(),
                         ),
@@ -114,12 +145,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 .textInputDecorationDrop(
                                     "Chọn tỉnh thành", " "),
                             // ignore: non_constant_identifier_names
-                            onFind: (String) =>
-                                getDataProvince(), //(String? filter) => getData(filter),
+                            onFind: (String) => LocationController()
+                                .getProvince(), //(String? filter) => getData(filter),
                             onChanged: (data) {
-                              print(data!.code);
+                              //print(data!.code);
                               setState(() {
-                                idProvince = data.code;
+                                idProvince = data!.code;
+                                province = data.name_with_type;
                               });
                             },
                             showSearchBox: true,
@@ -143,12 +175,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 .textInputDecorationDrop(
                                     "Chọn huyện/thành phố", " "),
                             // ignore: non_constant_identifier_names
-                            onFind: (String) => getDataDicstrict(
-                                idProvince), //(String? filter) => getData(filter),
+                            onFind: (String) {
+                              return LocationController()
+                                  .getDistrict(idProvince);
+                            }, //(String? filter) => getData(filter),
                             onChanged: (data) {
-                              print(data!.code);
+                              // print(data!.code);
                               setState(() {
-                                idDistrict = data.code;
+                                idDistrict = data!.code;
+                                district = data.name_with_type;
                               });
                             },
                             showSearchBox: true,
@@ -171,12 +206,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             dropdownSearchDecoration: ThemeHelper()
                                 .textInputDecorationDrop("Chọn xã/phường", " "),
                             // ignore: non_constant_identifier_names
-                            onFind: (String) => getDataVillage(
+                            onFind: (String) => LocationController().getVillage(
                                 idDistrict), //(String? filter) => getData(filter),
                             onChanged: (data) {
-                              print(data!.code);
+                              //print(data!.code);
                               setState(() {
-                                idDistrict = data.code;
+                                idDistrict = data!.code;
+                                village = data.name_with_type;
                               });
                             },
                             showSearchBox: true,
@@ -196,6 +232,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           child: TextFormField(
                             decoration: ThemeHelper().textInputDecoration(
                                 "E-mail address", "Enter your email"),
+                            controller: email,
                             keyboardType: TextInputType.emailAddress,
                             validator: (val) {
                               // if ((val!.isEmpty) &&
@@ -221,6 +258,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           child: TextFormField(
                             decoration: ThemeHelper().textInputDecoration(
                                 "Mobile Number", "Enter your mobile number"),
+                            controller: phone,
                             keyboardType: TextInputType.phone,
                             validator: (val) {
                               if ((val!.isEmpty) &&
@@ -342,12 +380,44 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 ),
                               ),
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                        builder: (context) => ProfileScreen()),
-                                    (Route<dynamic> route) => false);
+                                var status = await registerAPI();
+                                if (status.statusCode == 409 ||
+                                    status.statusCode == 400) {
+                                  snackBar('Email or Phone is exist');
+                                } else if (status.statusCode == 200) {
+                                  print("Register success");
+                                  showDialog(
+                                      context: context,
+                                      builder: (contex) {
+                                        return AlertDialog(
+                                          title: Text('Register Successful'),
+                                          content: Text(
+                                              'Press "OK" to verify Account'),
+                                          actions: [
+                                            TextButton(
+                                              child: Text(
+                                                "OK",
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                              style: ButtonStyle(
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all(
+                                                          Colors.black38)),
+                                              onPressed: () {
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            PinCodeVerificationScreen(
+                                                                email.text)));
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      });
+                                }
                               }
                             },
                           ),
@@ -460,42 +530,30 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-  // Gọi API bắt Province
-  Future<List<Province>> getDataProvince() async {
-    var response = await Dio().get(
-      "https://location-vn.herokuapp.com/api/province",
-    );
+  // gọi API auth/register đăng ký tài khoản
+  Future<http.Response> registerAPI() async {
+    var url = 'hqd-mobile-store-api.herokuapp.com';
+    Map dataBody = {
+      "email": email.text,
+      "phone": phone.text,
+      "name": name.text,
+      "password": pass.text,
+      "address": {
+        "detail": addressDetail.text,
+        "village": village,
+        "district": district,
+        "province": province,
+      }
+    };
+    var response = await http.post(Uri.https(url, "/auth/register"),
+        body: jsonEncode(dataBody),
+        headers: {
+          "Content-type": "application/json",
+          "Accept": "application/json",
+        });
 
-    final data = response.data;
-    if (data != null) {
-      return Province.fromJsonList(data);
-    }
-    return [];
-  }
-
-  // gọi API bắt District
-  Future<List<District>> getDataDicstrict(String id) async {
-    var response = await Dio().get(
-      "https://location-vn.herokuapp.com/api/province/$id/district",
-    );
-
-    final data = response.data;
-    if (data != null) {
-      return District.fromJsonList(data);
-    }
-    return [];
-  }
-
-  // gọi API bắt Village
-  Future<List<Village>> getDataVillage(String id) async {
-    var response = await Dio().get(
-      "https://location-vn.herokuapp.com/api/district/$id/village",
-    );
-
-    final data = response.data;
-    if (data != null) {
-      return Village.fromJsonList(data);
-    }
-    return [];
+    print("Data status: ${response.statusCode}");
+    //print(h);
+    return response;
   }
 }

@@ -139,14 +139,14 @@ class _PasswordVetificationScreen extends State<PasswordVetificationScreen> {
                                 ),
                                 onPressed: _pinSuccess
                                     ? () {
-                                        Navigator.of(context)
-                                            .pushAndRemoveUntil(
-                                                MaterialPageRoute(
-                                                    builder:
-                                                        (context) =>
-                                                            ProfileScreen()),
-                                                (Route<dynamic> route) =>
-                                                    false);
+                                        // Navigator.of(context)
+                                        //     .pushAndRemoveUntil(
+                                        //         MaterialPageRoute(
+                                        //             builder:
+                                        //                 (context) =>
+                                        //                     ProfileScreen()),
+                                        //         (Route<dynamic> route) =>
+                                        //             false);
                                       }
                                     : null,
                               ),
