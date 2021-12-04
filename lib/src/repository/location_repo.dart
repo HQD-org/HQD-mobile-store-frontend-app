@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:mobile_store/src/models/province.dart';
 
 const String baseURL = 'https://location-vn.herokuapp.com';
 

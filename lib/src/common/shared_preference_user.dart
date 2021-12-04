@@ -10,7 +10,11 @@ class UserSharedPreference {
     await prefs!.setString('token', value);
   }
 
-  static String getAccessToken() {
-    return prefs!.getString('token') ?? '0';
+  static String? getAccessToken() {
+    return prefs!.getString('token');
+  }
+
+  static void clearAccessToken() {
+    prefs!.remove('token');
   }
 }

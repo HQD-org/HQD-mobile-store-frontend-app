@@ -1,16 +1,19 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hexcolor/hexcolor.dart';
+
 import 'package:mobile_store/src/common/shared_preference_user.dart';
+import 'package:mobile_store/src/models/user_model.dart';
+import 'package:mobile_store/src/providers/user_provider.dart';
+import 'package:mobile_store/src/screens/change_password_screen.dart';
+import 'package:mobile_store/src/screens/home.dart';
+import 'package:mobile_store/src/screens/login_screen.dart';
+import 'package:mobile_store/src/screens/update_info_screen.dart';
 import 'package:mobile_store/src/widgets/header_widget.dart';
 import 'package:http/http.dart' as http;
 
 class ProfileScreen extends StatefulWidget {
-  String repoUser;
-  ProfileScreen({required this.repoUser});
   @override
   State<StatefulWidget> createState() {
     return _ProfileScreenState();
@@ -19,31 +22,12 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   double _drawerIconSize = 24;
-  var token = UserSharedPreference.getAccessToken();
-  getDataUser(int value) {
-    // 1: Name
-    // 2: phone
-    // 3: email
-    // 4: address
-    var data = jsonDecode(widget.repoUser);
-    var name = data['data']['user']['name'];
-    var email = data['data']['user']['email'];
-    var phone = data['data']['user']['phone'];
-    var address = data['data']['user']['address']['detail'];
-    var province = data['data']['user']['address']['province'];
-    //print('${data['data']['user']['address']['detail']}');
-    switch (value) {
-      case 1:
-        return name;
-      case 2:
-        return phone;
-      case 3:
-        return email;
-      case 4:
-        return address + ",  " + province;
-      default:
-        return "Not known";
-    }
+  late UserModel user;
+
+  @override
+  void initState() {
+    super.initState();
+    user = userProvider.getUser!;
   }
 
   @override
@@ -114,25 +98,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: ListView(
             children: [
               DrawerHeader(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: <Color>[
-                        Theme.of(context).primaryColor.withOpacity(0.2),
-                        Theme.of(context).accentColor.withOpacity(0.7)
-                      ]),
-                ),
-                child: Container(
-                  child: Text(
-                    "${getDataUser(3)}",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: <Color>[
+                          Theme.of(context).primaryColor.withOpacity(0.2),
+                          Theme.of(context).accentColor.withOpacity(0.7)
+                        ]),
                   ),
-                ),
-              ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: 50.0,
+                        width: 50.0,
+                        child: CircleAvatar(
+                          backgroundImage: AssetImage("asset/banner/avata.jpg"),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 7.0,
+                      ),
+                      Container(
+                        child: Text(
+                          "Xin chào, ${user.name}",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 7.0,
+                      ),
+                      Container(
+                        child: Text(
+                          "${user.email}",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )),
               ListTile(
                 leading: Icon(
                   Icons.home,
@@ -145,7 +155,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fontSize: 17, color: Colors.purple.withOpacity(0.8)),
                 ),
                 onTap: () {
-                  print("Chuyển đến Home Page");
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => MyHomePage()));
+                },
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.system_security_update_good,
+                  size: _drawerIconSize,
+                  color: Colors.purple.withOpacity(0.8),
+                ),
+                title: Text(
+                  "Đổi thông tin cá nhân",
+                  style: TextStyle(
+                      fontSize: 17, color: Colors.purple.withOpacity(0.8)),
+                ),
+                onTap: () {
+                  print("Chuyển đến Trang đổi thông tin");
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => UpdateInfoScreen()));
+                },
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.security_rounded,
+                  size: _drawerIconSize,
+                  color: Colors.purple.withOpacity(0.8),
+                ),
+                title: Text(
+                  "Đổi mật khẩu",
+                  style: TextStyle(
+                      fontSize: 17, color: Colors.purple.withOpacity(0.8)),
+                ),
+                onTap: () {
+                  print("Chuyển đến Trang Đổi mật khẩu");
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ChangePasswordScreen()));
+                },
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.logout,
+                  size: _drawerIconSize,
+                  color: Colors.purple.withOpacity(0.8),
+                ),
+                title: Text(
+                  "Thoát",
+                  style: TextStyle(
+                      fontSize: 17, color: Colors.purple.withOpacity(0.8)),
+                ),
+                onTap: () {
+                  print("Chuyển đến Trang Login");
+                  UserSharedPreference.clearAccessToken();
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                      (route) => false);
                 },
               ),
             ],
@@ -188,7 +252,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 20.0,
                   ),
                   Text(
-                    getDataUser(1),
+                    user.name,
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
@@ -220,18 +284,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         horizontal: 12, vertical: 4),
                                     leading: Icon(Icons.my_location),
                                     title: Text("Location"),
-                                    subtitle: Text("${getDataUser(4)}"),
+                                    subtitle: Text(
+                                        "${user.address.detail}, ${user.address.province}"),
                                     onTap: () {},
                                   ),
                                   ListTile(
                                     leading: Icon(Icons.email),
                                     title: Text("Email"),
-                                    subtitle: Text("${getDataUser(3)}"),
+                                    subtitle: Text("${user.email}"),
                                   ),
                                   ListTile(
                                     leading: Icon(Icons.phone),
                                     title: Text("Phone"),
-                                    subtitle: Text("${getDataUser(2)}"),
+                                    subtitle: Text("${user.phone}"),
                                   ),
                                 ],
                               ),

@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:mobile_store/src/app.dart';
 import 'package:mobile_store/src/common/shared_preference_user.dart';
+import 'package:mobile_store/src/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
+int time = 2;
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await UserSharedPreference.init();
@@ -15,7 +18,13 @@ class MyApp extends StatelessWidget {
   Color _accentColor = HexColor('#10B6DB');
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<UserProvider>(
+          create: (context) => userProvider,
+        ),
+      ],
+      child: MaterialApp(
         title: 'HQD Mobile App',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
@@ -24,6 +33,8 @@ class MyApp extends StatelessWidget {
           primaryColor: _pimaryColors,
           //scaffoldBackgroundColor: Colors.grey,
         ),
-        home: AppMobileStore());
+        home: AppMobileStore(),
+      ),
+    );
   }
 }

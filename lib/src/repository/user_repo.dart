@@ -1,16 +1,20 @@
-import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+import 'package:http/http.dart';
+import 'package:mobile_store/src/common/api_gateway.dart';
+import 'package:mobile_store/src/models/user_model.dart';
+import 'package:mobile_store/src/repository/base_repository.dart';
 
 const String baseURL = 'hqd-mobile-store-api.herokuapp.com';
 
 class UserRepository {
-  Future<http.Response> getAuthAPI(String token) async {
-    // Authorization
-    var response =
-        await http.get(Uri.https(baseURL, "/auth/get-auth"), headers: {
-      "Content-type": "application/json",
-      "Accept": "application/json",
-      "Authorization": "Bearer $token",
-    });
-    return response;
+  Future<UserModel?> getMyProfile() async {
+    Response response = await BaseRepository().get(ApiGateway.profile);
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body)['data'];
+      print(" infor User: " + jsonResponse.toString());
+      return UserModel.fromMap(jsonResponse['user']);
+    }
+    return null;
   }
 }

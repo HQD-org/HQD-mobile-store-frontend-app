@@ -6,7 +6,6 @@ import 'package:mobile_store/src/screens/login_screen.dart';
 import 'package:mobile_store/src/widgets/header_widget.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class PinCodeVerificationScreen extends StatefulWidget {
   final String? emailCurrent;

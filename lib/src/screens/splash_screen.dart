@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:mobile_store/src/screens/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   SplashScreen({Key? key, required this.title}) : super(key: key);
@@ -16,14 +15,6 @@ class _SplashScreenState extends State<SplashScreen> {
   bool _isVisible = false;
 
   _SplashScreenState() {
-    new Timer(const Duration(milliseconds: 2000), () {
-      setState(() {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => LoginScreen()),
-            (route) => false);
-      });
-    });
-
     new Timer(Duration(milliseconds: 10), () {
       setState(() {
         _isVisible =
@@ -55,10 +46,14 @@ class _SplashScreenState extends State<SplashScreen> {
             width: 140.0,
             child: Center(
               child: ClipOval(
-                child: Icon(
-                  Icons.android_outlined,
-                  size: 128,
-                ), //put your logo here
+                child: Image.asset(
+                  "asset/banner/iconapp.png",
+                  height: 128,
+                ),
+                // Icon(
+                //   Icons.android_outlined,
+                //   size: 128,
+                // ), //put your logo here
               ),
             ),
             decoration: BoxDecoration(

@@ -1,22 +1,23 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:mobile_store/src/app.dart';
 import 'package:mobile_store/src/common/shared_preference_user.dart';
 import 'package:mobile_store/src/common/theme_helper.dart';
-import 'package:mobile_store/src/controllers/user_controller.dart';
+
+import 'package:mobile_store/src/repository/authentication_repository.dart';
 import 'package:mobile_store/src/screens/forgot_password_screen.dart';
-import 'package:mobile_store/src/screens/profile_screen.dart';
+
 import 'package:mobile_store/src/screens/registration_screen.dart';
 import 'package:mobile_store/src/screens/vetification_screen.dart';
+import 'package:mobile_store/src/widgets/dialog_loading.dart';
 import 'package:mobile_store/src/widgets/header_widget.dart';
-import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _LoginScreenState();
   }
 }
@@ -39,7 +40,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -119,32 +119,26 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
-                                    print("email: " + email.text);
-                                    print("Password: " + pass.text);
-                                    var status = await LoginAPI();
+                                    showDialogLoading(context);
+                                    var status =
+                                        await AuthenticationRepository()
+                                            .loginAPI(
+                                      username: email.text,
+                                      password: pass.text,
+                                    );
+                                    Navigator.pop(context);
                                     if (status.statusCode == 200) {
                                       var dataResponse =
                                           jsonDecode(status.body);
                                       UserSharedPreference.setAccessToken(
                                           dataResponse['data']['accessToken']);
-                                      print(UserSharedPreference
-                                          .getAccessToken());
-
-                                      // bắt getAuth API khúc này
-                                      var token =
-                                          UserSharedPreference.getAccessToken();
-                                      var dataAuth = await UserController()
-                                          .getDataAuth(token);
-                                      String user = dataAuth.toString();
-                                      //jsonDecode(dataAuth).toString();
-                                      print('Login: $user');
-                                      // chuyển sang trang Profile
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ProfileScreen(
-                                                    repoUser: user,
-                                                  )));
+                                      Navigator.of(context).pushAndRemoveUntil(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              AppMobileStore(),
+                                        ),
+                                        (route) => false,
+                                      );
                                     } else if (status.statusCode == 401) {
                                       // khúc này yêu cầu người dùng verify tài khoản trước khi Login
                                       showDialog(
@@ -192,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Container(
                               margin: EdgeInsets.all(15.0),
                               child: GestureDetector(
-                                child: Text("Forgot Password"),
+                                child: Text("Quên mật khẩu"),
                                 onTap: () {
                                   print("Forgot Password");
                                   Navigator.of(context).push(MaterialPageRoute(
@@ -204,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Container(
                               margin: EdgeInsets.all(8.0),
                               child: GestureDetector(
-                                child: Text("Don't have an account? Create"),
+                                child: Text("Chưa có tài khoản? Đăng ký ngay"),
                                 onTap: () {
                                   print("Don't have an account? Create");
                                   Navigator.of(context).push(MaterialPageRoute(
@@ -223,24 +217,5 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
-  }
-
-  // Bắt API login
-  Future<http.Response> LoginAPI() async {
-    var url = 'hqd-mobile-store-api.herokuapp.com';
-    Map dataBody = {
-      "username": email.text,
-      "password": pass.text,
-    };
-    var response = await http.post(Uri.https(url, '/auth/login'),
-        body: jsonEncode(dataBody),
-        headers: {
-          "Content-type": "application/json",
-          "Accept": "application/json",
-        });
-
-    //print("data: ${dataResponse['data']['accessToken']}");
-    print("${response.statusCode}");
-    return response;
   }
 }

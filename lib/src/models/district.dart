@@ -2,38 +2,38 @@ import 'dart:convert';
 
 class District {
   final String code;
-  final String name_with_type;
+  final String nameWithType;
   District({
     required this.code,
-    required this.name_with_type,
+    required this.nameWithType,
   });
 
   District copyWith({
     String? code,
-    String? name_with_type,
+    String? nameWithType,
   }) {
     return District(
       code: code ?? this.code,
-      name_with_type: name_with_type ?? this.name_with_type,
+      nameWithType: nameWithType ?? this.nameWithType,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'code': code,
-      'name_with_type': name_with_type,
+      'nameWithType': nameWithType,
     };
   }
 
   factory District.fromMap(Map<String, dynamic> map) {
     return District(
       code: map['code'],
-      name_with_type: map['name_with_type'],
+      nameWithType: map['name_with_type'],
     );
   }
 
   factory District.fromJson(Map<String, dynamic> json) {
-    return District(code: json['code'], name_with_type: json['name_with_type']);
+    return District(code: json['code'], nameWithType: json['name_with_type']);
   }
 
   static List<District> fromJsonList(List list) {
@@ -47,7 +47,7 @@ class District {
   String toJson() => json.encode(toMap());
 
   @override
-  String toString() => name_with_type;
+  String toString() => nameWithType;
 
   @override
   bool operator ==(Object other) {
@@ -55,9 +55,9 @@ class District {
 
     return other is District &&
         other.code == code &&
-        other.name_with_type == name_with_type;
+        other.nameWithType == nameWithType;
   }
 
   @override
-  int get hashCode => code.hashCode ^ name_with_type.hashCode;
+  int get hashCode => code.hashCode ^ nameWithType.hashCode;
 }

@@ -2,24 +2,24 @@ import 'dart:convert';
 
 class Province {
   final String name;
-  final String name_with_type;
+  final String nameWithType;
   final String type;
   final String code;
   Province(
       {required this.name,
-      required this.name_with_type,
+      required this.nameWithType,
       required this.type,
       required this.code});
 
   Province copyWith({
     String? name,
-    String? name_with_type,
+    String? nameWithType,
     String? type,
     String? code,
   }) {
     return Province(
       name: name ?? this.name,
-      name_with_type: name_with_type ?? this.name_with_type,
+      nameWithType: nameWithType ?? this.nameWithType,
       type: type ?? this.type,
       code: code ?? this.code,
     );
@@ -28,7 +28,7 @@ class Province {
   Map<String, dynamic> toMap() {
     return {
       'name': name,
-      'name_with_type': name_with_type,
+      'nameWithType': nameWithType,
       'type': type,
       'code': code,
     };
@@ -37,7 +37,7 @@ class Province {
   factory Province.fromMap(Map<String, dynamic> map) {
     return Province(
       name: map['name'],
-      name_with_type: map['name_with_type'],
+      nameWithType: map['name_with_type'],
       type: map['type'],
       code: map['code'],
     );
@@ -46,7 +46,7 @@ class Province {
   factory Province.fromJson(Map<String, dynamic> json) {
     return Province(
         name: json['name'],
-        name_with_type: json['name_with_type'],
+        nameWithType: json['name_with_type'],
         type: json['type'],
         code: json['code']);
   }
@@ -62,7 +62,7 @@ class Province {
 
   @override
   String toString() {
-    return name_with_type;
+    return nameWithType;
   }
 
   @override
@@ -71,7 +71,7 @@ class Province {
 
     return other is Province &&
         other.name == name &&
-        other.name_with_type == name_with_type &&
+        other.nameWithType == nameWithType &&
         other.type == type &&
         other.code == code;
   }
@@ -79,7 +79,7 @@ class Province {
   @override
   int get hashCode {
     return name.hashCode ^
-        name_with_type.hashCode ^
+        nameWithType.hashCode ^
         type.hashCode ^
         code.hashCode;
   }

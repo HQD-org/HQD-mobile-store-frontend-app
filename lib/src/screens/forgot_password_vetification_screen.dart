@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_store/src/common/theme_helper.dart';
-import 'package:mobile_store/src/screens/profile_screen.dart';
 import 'package:mobile_store/src/widgets/header_widget.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/style.dart';

@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_store/src/common/theme_helper.dart';
-import 'package:mobile_store/src/screens/forgot_password_vetification_screen.dart';
-import 'package:mobile_store/src/screens/vetification_screen.dart';
+import 'package:mobile_store/src/repository/authentication_repository.dart';
+import 'package:mobile_store/src/screens/forgot_pass_vetify.dart';
 import 'package:mobile_store/src/widgets/header_widget.dart';
 import 'package:http/http.dart' as http;
 
@@ -23,7 +23,7 @@ class _ForgotPasswordScreen extends State<ForgotPasswordScreen> {
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message!),
-        duration: Duration(seconds: 2),
+        duration: Duration(seconds: 3),
       ),
     );
   }
@@ -55,7 +55,7 @@ class _ForgotPasswordScreen extends State<ForgotPasswordScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Forgot Password?',
+                              'Quên mật khẩu',
                               style: TextStyle(
                                   fontSize: 35,
                                   fontWeight: FontWeight.bold,
@@ -66,7 +66,7 @@ class _ForgotPasswordScreen extends State<ForgotPasswordScreen> {
                               height: 10,
                             ),
                             Text(
-                              'Enter the email address associated with your account.',
+                              'Nhập địa chỉ email.',
                               style: TextStyle(
                                   // fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -77,7 +77,7 @@ class _ForgotPasswordScreen extends State<ForgotPasswordScreen> {
                               height: 10,
                             ),
                             Text(
-                              'We will email you a verification code to check your authenticity.',
+                              'Chúng tôi sẽ gửi mã xác thực về email trước khi làm mới mật khẩu của bạn.',
                               style: TextStyle(
                                 color: Colors.black38,
                                 // fontSize: 20,
@@ -131,17 +131,50 @@ class _ForgotPasswordScreen extends State<ForgotPasswordScreen> {
                                 ),
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
-                                    var status = await forgotPasswordAPI();
-                                    if (status.statusCode == 404) {
-                                      snackBar("Account not exist");
-                                    } else if (status.statusCode == 200) {
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                PinCodeVerificationScreen(
-                                                    email.text.trim())),
-                                      );
+                                    var status =
+                                        await AuthenticationRepository()
+                                            .forgotPassAPI(email: email.text);
+                                    if (status.statusCode == 200) {
+                                      // trường hợp gửi mã otp thành công
+                                      // Chuyển sang trang ForgotPasswordVetify
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: Text(
+                                                  'Một mã xác thực đã được gửi đến mail của bạn'),
+                                              content: Text(
+                                                  'Bấm "OK" để nhập mã OTP '),
+                                              actions: [
+                                                TextButton(
+                                                  child: Text(
+                                                    "OK",
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ),
+                                                  style: ButtonStyle(
+                                                      backgroundColor:
+                                                          MaterialStateProperty
+                                                              .all(Colors
+                                                                  .black38)),
+                                                  onPressed: () {
+                                                    Navigator.of(context)
+                                                        .pushAndRemoveUntil(
+                                                            MaterialPageRoute(
+                                                                builder: (context) =>
+                                                                    ForgotPasswordVetify(
+                                                                        email
+                                                                            .text)),
+                                                            (route) => false);
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          });
+                                    } else if (status.statusCode == 404) {
+                                      snackBar("Tài khoản không tồn tại");
+                                    } else {
+                                      snackBar("Tài khoản không tồn tại");
                                     }
                                   }
                                 },

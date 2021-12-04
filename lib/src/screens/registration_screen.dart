@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
@@ -32,13 +31,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   TextEditingController email = new TextEditingController();
   TextEditingController phone = new TextEditingController();
   TextEditingController addressDetail = new TextEditingController();
+  TextEditingController pass = new TextEditingController();
+  TextEditingController confirmPass = new TextEditingController();
   String province = "";
   String district = "";
   String village = "";
-  TextEditingController pass = new TextEditingController();
+
   String idProvince = "";
   String idDistrict = "";
   bool _isObscure = true;
+  bool _isObscureConfirm = true;
+  bool isSelectedProvince = false;
+  bool isSelectedDistrict = false;
 
   snackBar(String? message) {
     return ScaffoldMessenger.of(context).showSnackBar(
@@ -110,15 +114,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         ),
                         Container(
                           child: TextFormField(
-                            decoration: ThemeHelper().textInputDecoration(
-                                'Fullname', 'Enter your Fullname'),
+                            decoration: ThemeHelper()
+                                .textInputDecoration('Họ tên', 'Nhập họ tên'),
                             controller: name,
                             validator: (val) {
                               if (val!.isEmpty) {
-                                return 'Enter fullname';
+                                return 'Nhập họ tên';
                               }
-                              if (RegExp('^[a-zA-Z]').hasMatch(val)) {
-                                return 'Invalid fullname';
+                              if (!RegExp('^[a-zA-Z]').hasMatch(val)) {
+                                return 'Họ tên sai định dạng, nhập lại';
                               }
                               return null;
                             },
@@ -130,8 +134,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         ),
                         Container(
                           child: TextFormField(
-                            decoration: ThemeHelper().textInputDecoration(
-                                'Address', 'Enter your Address'),
+                            decoration: ThemeHelper()
+                                .textInputDecoration('Địa chỉ', 'Nhập địa chỉ'),
                             controller: addressDetail,
                           ),
                           decoration: ThemeHelper().inputBoxDecorationShaddow(),
@@ -151,7 +155,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               //print(data!.code);
                               setState(() {
                                 idProvince = data!.code;
-                                province = data.name_with_type;
+                                province = data.nameWithType;
+                                isSelectedProvince = true;
                               });
                             },
                             showSearchBox: true,
@@ -171,6 +176,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           child: DropdownSearch<District>(
                             showSelectedItems: true,
                             compareFn: (i, s) => i?.isEqual(s!) ?? false,
+                            enabled: isSelectedProvince == true ? true : false,
                             dropdownSearchDecoration: ThemeHelper()
                                 .textInputDecorationDrop(
                                     "Chọn huyện/thành phố", " "),
@@ -183,7 +189,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               // print(data!.code);
                               setState(() {
                                 idDistrict = data!.code;
-                                district = data.name_with_type;
+                                district = data.nameWithType;
+                                isSelectedDistrict = true;
                               });
                             },
                             showSearchBox: true,
@@ -202,6 +209,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         Container(
                           child: DropdownSearch<Village>(
                             showSelectedItems: true,
+                            enabled: isSelectedDistrict == true ? true : false,
                             compareFn: (i, s) => i?.isEqual(s!) ?? false,
                             dropdownSearchDecoration: ThemeHelper()
                                 .textInputDecorationDrop("Chọn xã/phường", " "),
@@ -212,7 +220,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               //print(data!.code);
                               setState(() {
                                 idDistrict = data!.code;
-                                village = data.name_with_type;
+                                village = data.nameWithType;
                               });
                             },
                             showSearchBox: true,
@@ -231,7 +239,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         Container(
                           child: TextFormField(
                             decoration: ThemeHelper().textInputDecoration(
-                                "E-mail address", "Enter your email"),
+                                "Email", "Nhập địa chỉ Email"),
                             controller: email,
                             keyboardType: TextInputType.emailAddress,
                             validator: (val) {
@@ -247,7 +255,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               var result;
                               _isvalid
                                   ? result = null
-                                  : result = "Enter a valid email address";
+                                  : result = "Địa chỉ Email không đúng";
                               return result;
                             },
                           ),
@@ -257,13 +265,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         Container(
                           child: TextFormField(
                             decoration: ThemeHelper().textInputDecoration(
-                                "Mobile Number", "Enter your mobile number"),
+                                "Số điện thoại", "Nhập số điện thoại"),
                             controller: phone,
                             keyboardType: TextInputType.phone,
                             validator: (val) {
                               if ((val!.isEmpty) &&
                                   !RegExp(r"^(\d+)*$").hasMatch(val)) {
-                                return "Enter a valid phone number";
+                                return "Số điện thoại không đúng";
                               }
                               return null;
                             },
@@ -276,8 +284,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             obscureText: _isObscure,
                             controller: pass,
                             decoration: InputDecoration(
-                              labelText: "Password",
-                              hintText: "Enter your Password",
+                              labelText: "Mật khẩu",
+                              hintText: "Nhập mật khẩu",
                               filled: true,
                               contentPadding: EdgeInsets.fromLTRB(20, 0, 0, 0),
                               focusedBorder: OutlineInputBorder(
@@ -297,8 +305,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                       color: Colors.red, width: 2.0)),
                               suffixIcon: IconButton(
                                 icon: Icon(_isObscure
-                                    ? Icons.visibility
-                                    : Icons.visibility_off),
+                                    ? Icons.visibility_off
+                                    : Icons.visibility),
                                 onPressed: () {
                                   setState(() {
                                     _isObscure = !_isObscure;
@@ -308,12 +316,65 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             ),
                             validator: (val) {
                               if (val!.isEmpty) {
-                                return "Please enter password";
+                                return "Vui lòng nhập mật khẩu";
                               }
                               if ((!RegExp(
                                       r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$')
                                   .hasMatch(val))) {
-                                return "Please enter valid password";
+                                return "Mật khẩu sai định dạng";
+                              }
+                              return null;
+                            },
+                          ),
+                          decoration: ThemeHelper().inputBoxDecorationShaddow(),
+                        ),
+                        SizedBox(height: 20.0),
+                        Container(
+                          child: TextFormField(
+                            obscureText: _isObscureConfirm,
+                            controller: confirmPass,
+                            decoration: InputDecoration(
+                              labelText: "Nhập lại mật khẩu",
+                              hintText: "Nhập lại mật khẩu",
+                              filled: true,
+                              contentPadding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(100.0),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(100.0),
+                                  borderSide:
+                                      BorderSide(color: Colors.grey.shade400)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(100.0),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 2.0)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(100.0),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 2.0)),
+                              suffixIcon: IconButton(
+                                icon: Icon(_isObscureConfirm
+                                    ? Icons.visibility_off
+                                    : Icons.visibility),
+                                onPressed: () {
+                                  setState(() {
+                                    _isObscureConfirm = !_isObscureConfirm;
+                                  });
+                                },
+                              ),
+                            ),
+                            validator: (val) {
+                              if (val!.isEmpty) {
+                                return "Vui lòng nhập lại mật khẩu";
+                              }
+                              if ((!RegExp(
+                                      r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$')
+                                  .hasMatch(val))) {
+                                return "Mật khẩu sai định dạng";
+                              }
+                              if (val != pass.text) {
+                                return "Nhập lại mật khẩu không đúng";
                               }
                               return null;
                             },
@@ -335,7 +396,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                           });
                                         }),
                                     Text(
-                                      "I accept all terms and conditions.",
+                                      "Tôi đồng ý các điều kiện",
                                       style: TextStyle(color: Colors.black),
                                     ),
                                   ],
@@ -356,7 +417,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           },
                           validator: (value) {
                             if (!checkboxValue) {
-                              return 'You need to accept terms and conditions';
+                              return 'Bạn phải đồng ý các điều kiện';
                             } else {
                               return null;
                             }
@@ -372,7 +433,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               padding:
                                   const EdgeInsets.fromLTRB(40, 10, 40, 10),
                               child: Text(
-                                "Register".toUpperCase(),
+                                "Đăng ký".toUpperCase(),
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
