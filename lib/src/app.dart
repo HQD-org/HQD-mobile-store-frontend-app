@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:mobile_store/main.dart';
 import 'package:mobile_store/src/common/shared_preference_user.dart';
+import 'package:mobile_store/src/providers/product_provider.dart';
+import 'package:mobile_store/src/repository/product_repository.dart';
 
 import 'package:mobile_store/src/screens/introductionApp/introduction_screen.dart';
 import 'package:mobile_store/src/screens/login_screen.dart';
@@ -20,17 +22,17 @@ class _AppMobileStore extends State<AppMobileStore> {
 
   @override
   void initState() {
-    // ProductRepository().getAllProduct().then((value) {
-    //   if (value != null) {
-    //     productProvider.setAllProduct = value;
-    //   }
-    // });
     super.initState();
     startTime();
   }
 
-  void startTime() {
-    var oneSec = Duration(milliseconds: 1000);
+  void startTime() async {
+    var oneSec = Duration(milliseconds: 3000);
+    await ProductRepository().getAllProduct().then((value) {
+      if (value != null) {
+        productProvider.setAllProduct = value;
+      }
+    });
     _timer = Timer.periodic(
       oneSec,
       (Timer timer) => setState(

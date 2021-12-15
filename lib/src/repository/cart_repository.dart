@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:http/http.dart';
 import 'package:mobile_store/src/common/api_gateway.dart';
+import 'package:mobile_store/src/models/cart_model.dart';
 import 'package:mobile_store/src/repository/base_repository.dart';
 
 class CartRepository {
@@ -25,6 +28,8 @@ class CartRepository {
     };
     Response response =
         await BaseRepository().post(ApiGateway.updateCart, dataBody);
+    var message = jsonDecode(response.body)['message'];
+    print(message.toString());
     return response;
   }
 
@@ -36,12 +41,12 @@ class CartRepository {
     return response;
   }
 
-  Future<List<CartModel>?> getdataCartAPI async(){
-       Response response = await BaseRepository().get(ApiGateway.);
+  Future<CartModel?> getdataCartAPI() async {
+    Response response = await BaseRepository().get(ApiGateway.getDataCart);
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body)['data'];
       //print("dataP: " + jsonResponse.toString());
-      return ProductModel.fromJsonList(jsonResponse);
+      return CartModel?.fromMap(jsonResponse);
     }
     return null;
   }

@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:mobile_store/src/app.dart';
 import 'package:mobile_store/src/common/shared_preference_user.dart';
+import 'package:mobile_store/src/providers/product_provider.dart';
 import 'package:mobile_store/src/providers/user_provider.dart';
+import 'package:mobile_store/src/screens/Order/history_order_screen.dart';
+import 'package:mobile_store/src/screens/cart/cart_screen.dart';
+import 'package:mobile_store/src/screens/home.dart';
 import 'package:provider/provider.dart';
 
 int time = 2;
@@ -23,6 +27,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<UserProvider>(
           create: (context) => userProvider,
         ),
+        ChangeNotifierProvider<ProductProvider>(
+            create: (context) => productProvider),
       ],
       child: MaterialApp(
         title: 'HQD Mobile App',
@@ -34,6 +40,12 @@ class MyApp extends StatelessWidget {
           //scaffoldBackgroundColor: Colors.grey,
         ),
         home: AppMobileStore(),
+        //initialRoute: '/',
+        routes: {
+          'home': (context) => MyHomePage(),
+          'cart': (context) => CartScreen(),
+          'history': (context) => HistoryOrderScreen(),
+        },
       ),
     );
   }

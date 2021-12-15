@@ -41,7 +41,7 @@ class BrandModel {
 
   factory BrandModel.fromMap(Map<String, dynamic> map) {
     return BrandModel(
-      id: map['id'],
+      id: map['_id'],
       name: map['name'],
       description: map['description'],
       image: map['image'],
@@ -53,7 +53,7 @@ class BrandModel {
 
   factory BrandModel.fromJson(Map<String, dynamic> json) {
     return BrandModel(
-        id: json['id'],
+        id: json['_id'],
         name: json['name'],
         description: json['description'],
         image: json['image'],

@@ -47,7 +47,7 @@ class CartModel {
 
   factory CartModel.fromMap(Map<String, dynamic> map) {
     return CartModel(
-      id: map['id'],
+      id: map['_id'],
       status: map['status'],
       user: map['user'],
       products: List<ProductCartModel>.from(
@@ -55,6 +55,9 @@ class CartModel {
       dataProduct: List<DataProductModel>.from(
           map['dataProduct']?.map((x) => DataProductModel.fromMap(x))),
     );
+  }
+  static List<CartModel> fromJsonList(List list) {
+    return list.map((e) => CartModel.fromMap(e)).toList();
   }
 
   String toJson() => json.encode(toMap());

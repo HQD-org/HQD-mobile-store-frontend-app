@@ -47,6 +47,9 @@ class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
   void initState() {
     super.initState();
     user = userProvider.getUser!;
+    name.text = user.name;
+    addressDetail.text = user.address.detail;
+    phone.text = user.phone;
   }
 
   snackBar(String? message) {
@@ -60,9 +63,6 @@ class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    name.text = user.name;
-    addressDetail.text = user.address.detail;
-    phone.text = user.phone;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(

@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:mobile_store/src/models/brand_model.dart';
+
+import 'package:mobile_store/src/repository/product_repository.dart';
+import 'package:mobile_store/src/widgets/product_card_gridview.dart';
 
 class BrandDetailScreen extends StatefulWidget {
   final BrandModel brand;
@@ -12,6 +17,27 @@ class BrandDetailScreen extends StatefulWidget {
 
 class _BrandDetailScreenState extends State<BrandDetailScreen> {
   bool isMore = false;
+  // Future<List<ProductModel>?> getDataProductBrand() async {
+  //   var response = await BaseRepository()
+  //       .get('product/filter', 'idBrand=${widget.brand.id}');
+  //   if (response.statusCode == 200) {
+  //     var jsonResponse = jsonDecode(response.body)['data'];
+  //     return ProductModel.fromJsonList(jsonResponse['products']);
+  //   }
+  //   return null;
+  // }
+
+  getDataProduct() async {
+    return ProductRepository()
+        .getAllProductByBrand('idBrand=${widget.brand.id}');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    //getDataProductBrand();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,6 +125,39 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
               ],
             ),
           ),
+          SizedBox(
+            child: Container(
+              padding: EdgeInsets.all(5.0),
+              child: FutureBuilder(
+                future: getDataProduct(),
+                builder:
+                    (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    return GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 4.0,
+                        mainAxisSpacing: 8.0,
+                      ),
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (context, index) {
+                        return ProductCardGrid(
+                          productCartGrid: snapshot.data[index],
+                        );
+                      },
+                      itemCount: snapshot.data.length,
+                      shrinkWrap: true,
+                      physics: ScrollPhysics(),
+                    );
+                  }
+                },
+              ),
+            ),
+          )
         ],
       )),
     );

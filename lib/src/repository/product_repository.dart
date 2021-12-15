@@ -15,4 +15,14 @@ class ProductRepository {
     }
     return null;
   }
+
+  Future<List<ProductModel>?> getAllProductByBrand(String param) async {
+    Response response =
+        await BaseRepository().get(ApiGateway.filterProduct, param);
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body)['data'];
+      return ProductModel.fromJsonList(jsonResponse['products']);
+    }
+    return null;
+  }
 }

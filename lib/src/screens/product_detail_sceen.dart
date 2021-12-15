@@ -167,7 +167,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       backgroundColor:
                           MaterialStateProperty.all(Colors.pinkAccent)),
                   onPressed: () async {
-                    print('thêm vào giỏ');
+                    if (currentRAM == "Chưa chọn RAM") {
+                      snackBar("Chưa chọn Ram");
+                      return;
+                    }
+                    if (currentCapacity == "Chưa chọn dung lượng") {
+                      snackBar("Chưa chọn dung lượng");
+                      return;
+                    }
+                    if (currentColors == "Chưa chọn màu") {
+                      snackBar("Chưa chọn màu");
+                      return;
+                    }
 
                     var status = await CartRepository().addToCartAPI(
                         idProduct: widget.product.id,
@@ -483,15 +494,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         size: 30,
                       ),
                       Text(
-                        " - Camera Sau: ",
+                        " - Camera Sau:  ",
                         style: TextStyle(fontSize: 16),
                       ),
-                      Text(
-                        "${widget.product.model.rearCamera}",
-                        style: TextStyle(fontSize: 16),
+                      Flexible(
+                        child: Text(
+                          "${widget.product.model.rearCamera}",
+                          style: TextStyle(fontSize: 16),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                        ),
                       ),
                     ],
                   ),
+
                   SizedBox(
                     height: 7.0,
                   ),

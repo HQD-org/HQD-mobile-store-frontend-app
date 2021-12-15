@@ -10,6 +10,7 @@ import 'package:mobile_store/src/screens/products/products_creen.dart';
 import 'package:mobile_store/src/widgets/brand_card.dart';
 import 'package:mobile_store/src/widgets/product_card.dart';
 import 'package:mobile_store/src/widgets/product_card_gridview.dart';
+import 'package:provider/provider.dart';
 
 final List<String> imgList = [
   'asset/banner/bannera.jpg',
@@ -77,12 +78,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return BrandRepository().getAllBrandAPI();
   }
 
-  getAllProduct() async {
-    return ProductRepository().getAllProduct();
-  }
+  // getAllProduct() async {
+  //   return ProductRepository().getAllProduct();
+  // }
 
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<ProductProvider>(context);
+    List<ProductModel>? listDataProduct = provider.getAllProduct;
+
     return SafeArea(
       // padding: EdgeInsets.all(10.0),
       minimum: EdgeInsets.all(5.0),
@@ -131,41 +135,32 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           SizedBox(
-            height: 230,
-            child: FutureBuilder(
-              future: getAllProduct(),
-              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else {
-                  return ListView.builder(
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        height: 150.0,
-                        width: 180.0,
-                        margin: EdgeInsets.only(right: 5.0),
-                        decoration: BoxDecoration(
-                            color: Colors.amber[50],
-                            border: Border.all(
-                              width: 0.35,
-                            )),
-                        child: ProductCard(
-                          productCart: snapshot.data[index],
-                          w: 180.0,
-                          h: 150.0,
-                        ),
-                      );
-                    },
-                    scrollDirection: Axis.horizontal,
-                  );
-                }
-              },
-            ),
-          ),
-
+              height: 230,
+              child: listDataProduct == null
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : ListView.builder(
+                      itemCount: 8, //listDataProduct.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          height: 150.0,
+                          width: 180.0,
+                          margin: EdgeInsets.only(right: 5.0),
+                          decoration: BoxDecoration(
+                              color: Colors.amber[50],
+                              border: Border.all(
+                                width: 0.35,
+                              )),
+                          child: ProductCard(
+                            productCart: listDataProduct[index],
+                            w: 180.0,
+                            h: 150.0,
+                          ),
+                        );
+                      },
+                      scrollDirection: Axis.horizontal,
+                    )),
           SizedBox(
             height: 15.0,
           ),
@@ -194,34 +189,27 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               height: 50.0),
           // Grid view cho product
-          // SizedBox(
-          //     child: FutureBuilder(
-          //   future: getAllProduct(),
-          //   builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-          //     if (!snapshot.hasData) {
-          //       return Center(
-          //         child: CircularProgressIndicator(),
-          //       );
-          //     } else {
-          //       return GridView.builder(
-          //         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          //           crossAxisCount: 2,
-          //           crossAxisSpacing: 4.0,
-          //           mainAxisSpacing: 8.0,
-          //         ),
-          //         scrollDirection: Axis.vertical,
-          //         itemBuilder: (context, index) {
-          //           return ProductCardGrid(
-          //             productCartGrid: snapshot.data[index],
-          //           );
-          //         },
-          //         itemCount: snapshot.data.length,
-          //         shrinkWrap: true,
-          //         physics: ScrollPhysics(),
-          //       );
-          //     }
-          //   },
-          // )),
+          SizedBox(
+              child: listDataProduct == null
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 4.0,
+                        mainAxisSpacing: 8.0,
+                      ),
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (context, index) {
+                        return ProductCardGrid(
+                          productCartGrid: listDataProduct[index],
+                        );
+                      },
+                      itemCount: 8, //listDataProduct.length,
+                      shrinkWrap: true,
+                      physics: ScrollPhysics(),
+                    )),
           SizedBox(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

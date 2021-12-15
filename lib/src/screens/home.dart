@@ -3,27 +3,34 @@ import 'package:flutter/material.dart';
 import 'package:mobile_store/src/common/shared_preference_user.dart';
 import 'package:mobile_store/src/providers/user_provider.dart';
 import 'package:mobile_store/src/repository/user_repo.dart';
+import 'package:mobile_store/src/screens/Order/history_order_screen.dart';
 import 'package:mobile_store/src/screens/cart/cart_screen.dart';
 import 'package:mobile_store/src/screens/favorite_screen.dart';
 import 'package:mobile_store/src/screens/home_screen.dart';
 import 'package:mobile_store/src/screens/list_user_screen.dart';
 import 'package:mobile_store/src/screens/login_screen.dart';
 import 'package:mobile_store/src/screens/profile_screen.dart';
+import 'package:mobile_store/src/screens/search_by_price_screen.dart';
+import 'package:mobile_store/src/screens/search_screen.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+//enum choise { one, two, three }
+
 class _MyHomePageState extends State<MyHomePage> {
   int _index = 2;
   String userName = "a"; //lấy UserName của current user
   String userEmail = "a";
+  TextEditingController search = new TextEditingController();
   Icon cusIcon = Icon(Icons.search);
   Widget cusSearchBar = Text("HQR Mobile");
   Widget child = Text("CMM");
   double _drawerIconSize = 24;
-
+  List<int> groupSelect = [1, 2, 3];
+  int select = 1;
   @override
   void initState() {
     super.initState();
@@ -38,6 +45,87 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    search.dispose();
+  }
+
+  showFilterPrice(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Tìm sản phẩm theo giá tiền'),
+          content: Container(
+            height: 300,
+            child: Column(
+              children: [
+                ListTile(
+                  title: Text('Nhỏ hơn 9.000.000 VNĐ'),
+                  leading: Radio(
+                      value: 1,
+                      groupValue: select,
+                      onChanged: (value) {
+                        print(value);
+                        setState(() {
+                          select = 1;
+                        });
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => SearchByPriceScreen(
+                                  selected: select,
+                                )));
+                      }),
+                ),
+                ListTile(
+                  title: Text('9.000.000 - 20.000.000 VNĐ'),
+                  leading: Radio(
+                      value: 2,
+                      groupValue: select,
+                      onChanged: (value) {
+                        print(value);
+                        setState(() {
+                          select = 2;
+                        });
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => SearchByPriceScreen(
+                                  selected: select,
+                                )));
+                      }),
+                ),
+                ListTile(
+                  title: Text('Lớn hơn 20.000.000 VNĐ'),
+                  leading: Radio(
+                      value: 3,
+                      groupValue: select,
+                      onChanged: (value) {
+                        print(value);
+                        setState(() {
+                          select = 3;
+                        });
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => SearchByPriceScreen(
+                                  selected: select,
+                                )));
+                      }),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                "Hủy",
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.black38)),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      });
   @override
   Widget build(BuildContext context) {
     // ignore: unused_local_variable
@@ -90,10 +178,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     suffixIcon: IconButton(
                       onPressed: () {
                         print("Search nè");
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => SearchScreen(
+                                  searchText: search.text,
+                                )));
                       },
                       icon: Icon(Icons.search),
                     ),
                   ),
+                  controller: search,
                 ),
               ),
             ],
@@ -104,7 +197,15 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: EdgeInsets.all(7.0),
             child: Row(
               children: [
-                Icon(Icons.filter_list_alt),
+                IconButton(
+                  onPressed: () {
+                    showFilterPrice(context);
+                  },
+                  icon: Icon(
+                    Icons.filter_list_alt,
+                    color: Colors.white,
+                  ),
+                ),
                 SizedBox(
                   width: 10.0,
                 ),
@@ -114,7 +215,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => CartScreen()));
                   },
-                  icon: Icon(Icons.shopping_cart),
+                  icon: Icon(
+                    Icons.shopping_cart,
+                    color: Colors.white,
+                  ),
                 ),
               ],
             ),
@@ -214,6 +318,23 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               ListTile(
                 leading: Icon(
+                  Icons.history_edu,
+                  size: _drawerIconSize,
+                  color: Colors.purple.withOpacity(0.8),
+                ),
+                title: Text(
+                  "Lịch sử mua hàng",
+                  style: TextStyle(
+                      fontSize: 17, color: Colors.purple.withOpacity(0.8)),
+                ),
+                onTap: () {
+                  print("Chuyển đến Trang lịch sử mua hàng");
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => HistoryOrderScreen()));
+                },
+              ),
+              ListTile(
+                leading: Icon(
                   Icons.people,
                   size: _drawerIconSize,
                   color: Colors.purple.withOpacity(0.8),
@@ -256,43 +377,125 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: Wrap(
         direction: Axis.vertical,
         children: [
+          // Container(
+          //   margin: EdgeInsets.all(3.0),
+          //   child: FloatingActionButton(
+          //     heroTag: null,
+          //     backgroundColor: Colors.blue,
+          //     onPressed: () {
+          //       print('message here');
+          //     },
+          //     child: Icon(
+          //       Icons.message,
+          //       color: Colors.white,
+          //     ),
+          //   ),
+          // ),
           Container(
-            margin: EdgeInsets.all(3.0),
-            child: FloatingActionButton(
-              heroTag: null,
-              onPressed: () {
-                print('message here');
-              },
-              child: Icon(
-                Icons.message,
-                color: Colors.white,
-              ),
+            margin: EdgeInsets.only(top: 10, right: 10),
+            child: Stack(
+              children: [
+                FloatingActionButton(
+                  heroTag: null,
+                  backgroundColor: Colors.blue,
+                  onPressed: () {
+                    print('message here');
+                  },
+                  child: Icon(
+                    Icons.message,
+                    color: Colors.white,
+                  ),
+                ),
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    padding: EdgeInsets.all(1),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    constraints:
+                        BoxConstraints(minWidth: 14.0, minHeight: 14.0),
+                    child: Text(
+                      "1",
+                      style: TextStyle(color: Colors.white, fontSize: 10),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Container(
-            margin: EdgeInsets.all(3.0),
-            child: FloatingActionButton(
-              heroTag: null,
-              onPressed: () {
-                print('Notification herea');
-              },
-              child: Icon(
-                Icons.notifications,
-                color: Colors.white,
-              ),
+            margin: EdgeInsets.only(top: 10, right: 10),
+            child: Stack(
+              children: [
+                FloatingActionButton(
+                  heroTag: null,
+                  backgroundColor: Colors.orange[400],
+                  onPressed: () {
+                    print('Notification herea');
+                  },
+                  child: Icon(
+                    Icons.notifications,
+                    color: Colors.white,
+                  ),
+                ),
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    padding: EdgeInsets.all(1),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    constraints:
+                        BoxConstraints(minWidth: 14.0, minHeight: 14.0),
+                    child: Text(
+                      "1",
+                      style: TextStyle(color: Colors.white, fontSize: 10),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
       bottomNavigationBar: ConvexAppBar(
         style: TabStyle.react,
-        backgroundColor: Colors.green[200],
+        backgroundColor: Colors.purple[400],
         items: [
-          TabItem(icon: Icons.list, title: "Lịch sử"),
-          TabItem(icon: Icons.favorite_border, title: "Yêu thích"),
-          TabItem(icon: Icons.home, title: "Home"),
-          TabItem(icon: Icons.info_rounded, title: "Thông tin"),
-          TabItem(icon: Icons.contact_mail, title: "Liên lạc"),
+          TabItem(
+              icon: Icon(
+                Icons.list,
+                color: Colors.white,
+              ),
+              title: "Lịch sử"),
+          TabItem(
+              icon: Icon(Icons.favorite_border, color: Colors.white),
+              title: "Yêu thích"),
+          TabItem(
+              icon: Icon(
+                Icons.home,
+                color: Colors.white,
+              ),
+              title: "Home"),
+          TabItem(
+              icon: Icon(
+                Icons.info_rounded,
+                color: Colors.white,
+              ),
+              title: "Thông tin"),
+          TabItem(
+              icon: Icon(
+                Icons.contact_mail,
+                color: Colors.white,
+              ),
+              title: "Liên lạc"),
         ],
         initialActiveIndex: 2,
         onTap: (int i) {

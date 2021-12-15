@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_store/src/models/product_model.dart';
+import 'package:mobile_store/src/models/cart_model.dart';
+import 'package:mobile_store/src/models/data_product_model.dart';
+import 'package:mobile_store/src/models/product_cart_model.dart';
+
+import 'package:mobile_store/src/providers/user_provider.dart';
+import 'package:mobile_store/src/repository/cart_repository.dart';
+import 'package:mobile_store/src/screens/Order/order_screen.dart';
 import 'package:mobile_store/src/screens/cart/cart_empty_screen.dart';
 import 'package:mobile_store/src/widgets/product_cart_widget.dart';
+import 'package:provider/provider.dart';
 
 class CartScreen extends StatefulWidget {
   @override
@@ -11,72 +18,88 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  List<String> cartItem = [];
+  List<ProductCartModel> cartItem = [];
   double totalPrice = 0;
+  CartModel? cartModel;
+  int isempty = 0;
+  bool _isLoading = true;
+  Future<Null> refresh() async {
+    Future.delayed(Duration(milliseconds: 1));
+    setState(() {});
+    return null;
+  }
+
+  getDataCart() async {
+    var model = Provider.of<UserProvider>(context, listen: false);
+    cartModel = await CartRepository().getdataCartAPI();
+    var dataPrice = cartModel!.products;
+    dataPrice.forEach((e) {
+      totalPrice = totalPrice + (e.price.toDouble() * e.quantity);
+    });
+    model.setPrice = totalPrice;
+
+    print("------------ $totalPrice");
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  snackBar(String? message) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message!),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-    for (int i = 0; i < listProductCart.length; i++) {
-      totalPrice = totalPrice + double.parse(listProductCart[i].price);
-    }
+    getDataCart();
   }
 
-  var listProductCart = [
-    Product(
-        coupon: '25%',
-        imageURL:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIhw-aa3BQ1fDzNMEbo5aMUkPZF2qdmTcVwg&usqp=CAU',
-        price: '9400000',
-        productName: 'Iphone 8',
-        Screen: 'IPS LCD6.5"HD+',
-        OSSystem: 'Android',
-        frontCamera: '5 MP',
-        rearCamera: 'Chính 13MP & phụ 2MP',
-        chip: 'Spreadtrum T610 8 nhân',
-        RAM: '3GB',
-        capacity: '32GB',
-        sim: '2 Nano SIM hỗ trợ 4G',
-        Pin: '5000 mAh 10W',
-        brand: 'Apple',
-        description: 'Cái này xịn',
-        Colors: ["Vàng", "Xanh", "Đỏ"]),
-    Product(
-        coupon: '15%',
-        imageURL:
-            'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2020/06/hinh-anh-iphone-12-pro-max-2.jpg',
-        price: '24000000',
-        productName: 'Iphone 12',
-        Screen: 'IPS LCD6.5"HD+',
-        OSSystem: 'Android',
-        frontCamera: '5 MP',
-        rearCamera: 'Chính 13MP & phụ 2MP',
-        chip: 'Spreadtrum T610 8 nhân',
-        RAM: '3GB',
-        capacity: '32GB',
-        sim: '2 Nano SIM hỗ trợ 4G',
-        Pin: '5000 mAh 10W',
-        brand: 'Apple',
-        description: 'Cái này xịn',
-        Colors: ["Vàng", "Xanh", "Đỏ"]),
-  ];
   Widget cart() {
-    return ListView.builder(
-        itemCount: listProductCart.length,
-        itemBuilder: (context, index) {
-          if (listProductCart.isEmpty) {
-            return Center(
+    return _isLoading
+        ? Container(
+            child: Center(
               child: CircularProgressIndicator(),
-            );
-          } else {
-            return ItemCart(
-              item: listProductCart[index],
-            );
-          }
-        });
+            ),
+          )
+        : ListView.builder(
+            itemCount: cartModel!.products.length,
+            itemBuilder: (context, index) {
+              List<DataProductModel> listDataModel = cartModel!.dataProduct;
+              DataProductModel dataModel;
+              for (int i = 0; i < listDataModel.length; i++) {
+                if (cartModel!.products[index].idProduct ==
+                    listDataModel[i].id) {
+                  dataModel = listDataModel[i];
+                  return ItemCart(
+                    item: cartModel!.products[index],
+                    itemModel: dataModel,
+                    indexCart: index,
+                  );
+                } else {
+                  dataModel = listDataModel[i];
+                  return ItemCart(
+                    item: cartModel!.products[index],
+                    itemModel: dataModel,
+                    indexCart: index,
+                  );
+                }
+              }
+              return ListTile(
+                title: Text("em thua"),
+              );
+            });
   }
 
   // custom bottomSheet khúc này cho biết tổng tiền của giỏ hàng
   Widget checkOutSection() {
+    var model = Provider.of<UserProvider>(context);
+    double p = model.getPrice;
     return Container(
       decoration: BoxDecoration(
         border: Border(top: BorderSide(color: Colors.black, width: 0.5)),
@@ -105,6 +128,12 @@ class _CartScreenState extends State<CartScreen> {
                     ),
                   ),
                   onTap: () {
+                    if (totalPrice == 0) {
+                      snackBar("Không thể thanh toán");
+                      return;
+                    }
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => OrderScreen()));
                     print("CheckOut");
                   },
                 ),
@@ -121,7 +150,7 @@ class _CartScreenState extends State<CartScreen> {
               ),
             ),
             Text(
-              "$totalPrice-VNĐ",
+              "$p-VNĐ",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -141,7 +170,7 @@ class _CartScreenState extends State<CartScreen> {
       appBar: AppBar(
         title: Text('Giỏ hàng'),
       ),
-      body: listProductCart.length == 0 ? CartEmptyScreenState() : cart(),
+      body: totalPrice != 0 ? cart() : CartEmptyScreenState(),
       bottomSheet: checkOutSection(),
     );
   }

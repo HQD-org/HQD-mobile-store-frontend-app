@@ -12,10 +12,18 @@ class ApiGateway {
 
   // Product
   static const String getAllProduct = "product/get-all";
+  static const String filterProduct = "product/filter";
 
   // Cart
   static const String addToCart = "cart/add-to-cart";
   static const String updateCart = "cart/update-cart";
   static const String getDataCart = "cart/get-cart";
   static const String removeItem = "cart/delete-cart";
+
+  //Order
+  static const String crateOrderCOD = "order/create";
+  static const String getDataOrder = "order/get-by-status-and-user";
+  static const String cancelOrder = "order/cancel";
+  static const String createOrderOnline = "payment/order";
+  static const String paymentOrderSuccess = "payment/success";
 }
