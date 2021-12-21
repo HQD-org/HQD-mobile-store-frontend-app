@@ -37,7 +37,6 @@ class _CartScreenState extends State<CartScreen> {
       totalPrice = totalPrice + (e.price.toDouble() * e.quantity);
     });
     model.setPrice = totalPrice;
-
     print("------------ $totalPrice");
 
     setState(() {
@@ -166,11 +165,16 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var model = Provider.of<UserProvider>(context);
+    bool hasCart1 = model.hasCart;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Giỏ hàng'),
+        title: Text(
+          'Giỏ hàng',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
-      body: totalPrice != 0 ? cart() : CartEmptyScreenState(),
+      body: hasCart1 ? cart() : CartEmptyScreenState(),
       bottomSheet: checkOutSection(),
     );
   }

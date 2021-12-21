@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_store/src/repository/coupon_repository.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:io';
 
 class PaymentPaypalScreen extends StatefulWidget {
   final String url;
-  PaymentPaypalScreen({required this.url});
+  final String coupon;
+  PaymentPaypalScreen({required this.url, required this.coupon});
   @override
   State<StatefulWidget> createState() {
     return _PaymentPaypalScreenState();
@@ -45,17 +47,28 @@ class _PaymentPaypalScreenState extends State<PaymentPaypalScreen> {
         initialUrl: widget.url,
         javascriptMode: JavascriptMode.unrestricted,
         onWebViewCreated: (controller) {},
-        onPageFinished: (page) {
+        onPageFinished: (page) async {
           if (page.contains('/success')) {
             setState(() {
               status = "success";
             });
-            showDialog(
-                context: context,
-                builder: (contex) => CustomDialog(
-                    title: "Thanh toán thành công",
-                    description: "Cảm ơn bạn đã tin dùng HQD store!",
-                    isSuccess: status));
+            var applyCoupon =
+                await CouponRepository().applyCouponAPI(widget.coupon);
+            if (applyCoupon.statusCode == 200) {
+              showDialog(
+                  context: context,
+                  builder: (contex) => CustomDialog(
+                      title: "Thanh toán thành công",
+                      description: "Cảm ơn bạn đã tin dùng HQD store!",
+                      isSuccess: status));
+            } else {
+              showDialog(
+                  context: context,
+                  builder: (contex) => CustomDialog(
+                      title: "Thanh toán thành công",
+                      description: "Cảm ơn bạn đã tin dùng HQD store!",
+                      isSuccess: status));
+            }
           } else if (page.contains('/cancel')) {
             setState(() {
               status = "cancel";

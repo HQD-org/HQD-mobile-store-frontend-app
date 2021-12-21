@@ -9,10 +9,12 @@ class DetailOrderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double price = 0;
+    double discount = 0;
     List<ProductOrderModel> listP = detailOrder.products;
     listP.forEach((element) {
       price += (element.price.toDouble() * element.quantity);
     });
+    discount = price + 30000 - detailOrder.totalPrice;
     return Scaffold(
       appBar: AppBar(
         title: Text("Chi tiết hóa đơn"),
@@ -308,7 +310,7 @@ class DetailOrderScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 18),
                   ),
                   Text(
-                    "-10.000-VNĐ",
+                    "-$discount-VNĐ",
                     style: TextStyle(fontSize: 18),
                   )
                 ],

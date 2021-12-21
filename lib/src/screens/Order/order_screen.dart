@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_store/src/common/theme_helper.dart';
 import 'package:mobile_store/src/controllers/location_controller.dart';
 import 'package:mobile_store/src/models/cart_model.dart';
+import 'package:mobile_store/src/models/coupon_model.dart';
 import 'package:mobile_store/src/models/data_product_model.dart';
 import 'package:mobile_store/src/models/district.dart';
 import 'package:mobile_store/src/models/product_cart_model.dart';
@@ -17,6 +18,7 @@ import 'package:mobile_store/src/models/user_model.dart';
 import 'package:mobile_store/src/models/village.dart';
 import 'package:mobile_store/src/providers/user_provider.dart';
 import 'package:mobile_store/src/repository/cart_repository.dart';
+import 'package:mobile_store/src/repository/coupon_repository.dart';
 import 'package:mobile_store/src/repository/order_repository.dart';
 import 'package:mobile_store/src/screens/Order/payment_paypal_screen.dart';
 import 'package:mobile_store/src/screens/home.dart';
@@ -61,6 +63,8 @@ class _OrderScreenState extends State<OrderScreen> {
   bool isClick = false;
   int stepIndex = 0;
   double price = 0;
+  double discount = 0;
+  String idCoupon = "null";
   late UserModel user;
   snackBar(String? message) {
     return ScaffoldMessenger.of(context).showSnackBar(
@@ -415,7 +419,38 @@ class _OrderScreenState extends State<OrderScreen> {
                                 borderRadius: BorderRadius.circular(10)),
                             side: BorderSide(color: Colors.blue),
                             primary: Colors.white),
-                        onPressed: () {
+                        onPressed: () async {
+                          CouponModel? getCoupon = await CouponRepository()
+                              .getDataCouponByName(
+                                  'name=${coupon.text.trim()}');
+                          if (getCoupon != null) {
+                            if (getCoupon.quantity > 0) {
+                              idCoupon = getCoupon.id;
+                              print("coupon1: $idCoupon");
+                              if (totalPrice >= getCoupon.minPriceToApply) {
+                                double stemp = totalPrice;
+                                discount =
+                                    (totalPrice * getCoupon.discountValue) /
+                                        100;
+                                if (discount >= getCoupon.maxDiscount) {
+                                  stemp = stemp - getCoupon.maxDiscount;
+                                  price = stemp + 30000;
+                                  discount = getCoupon.maxDiscount.toDouble();
+                                } else {
+                                  stemp = stemp - discount;
+                                  price = stemp + 30000;
+                                }
+                              } else {
+                                snackBar(
+                                    "Đơn hàng không đáp ứng điều kiện của mã giảm giá");
+                              }
+                            } else {
+                              snackBar("Mã khuyến mãi đã hết");
+                            }
+                          } else {
+                            snackBar("Sai mã khuyến mãi");
+                          }
+
                           setState(() {
                             isClick = true;
                           });
@@ -438,7 +473,7 @@ class _OrderScreenState extends State<OrderScreen> {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [Text("khuyến Mãi"), Text("-10.000-VNĐ")],
+                  children: [Text("khuyến Mãi"), Text("-$discount-VNĐ")],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -585,7 +620,8 @@ class _OrderScreenState extends State<OrderScreen> {
                                   receiveAt: reAt,
                                   timeReceive: timeRe,
                                   // typePayment: typePayment,
-                                  message: note.text);
+                                  message:
+                                      note.text == "" ? "null" : note.text);
                               var uInfo = info.toJson();
 
                               var listp =
@@ -594,20 +630,35 @@ class _OrderScreenState extends State<OrderScreen> {
                               var status =
                                   await OrderRepository().createOrderCODAPI(
                                 receiverInfo: uInfo,
-                                coupon: coupon.text,
+                                coupon:
+                                    coupon.text == "" ? "null" : coupon.text,
                                 totalPrice: price,
                                 products: listp,
                               );
                               Navigator.pop(context);
                               if (status.statusCode == 200 ||
                                   status.statusCode == 201) {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => CustomDialog(
-                                          title: "Thanh toán thành công",
-                                          description:
-                                              "Cảm ơn quý khách đã tin dùng HQD store",
-                                        ));
+                                var applyCoupon = await CouponRepository()
+                                    .applyCouponAPI(idCoupon);
+
+                                if (applyCoupon.statusCode == 200) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => CustomDialog(
+                                            title: "Thanh toán thành công",
+                                            description:
+                                                "Cảm ơn quý khách đã tin dùng HQD store",
+                                          ));
+                                } else {
+                                  snackBar("Không tìm thấy mã giảm giá");
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => CustomDialog(
+                                            title: "Thanh toán thành công",
+                                            description:
+                                                "Cảm ơn quý khách đã tin dùng HQD store",
+                                          ));
+                                }
                               } else {
                                 snackBar("Tạo hóa đơn thất bại");
                               }
@@ -637,11 +688,14 @@ class _OrderScreenState extends State<OrderScreen> {
                                   receiveAt: reAt1,
                                   timeReceive: timeRe1,
                                   // typePayment: typePayment,
-                                  message: note.text);
+                                  message:
+                                      note.text == "" ? "null" : note.text);
                               var uInfo = info1.toJson();
                               var payment = await OrderRepository()
                                   .createOrderOnlineAPI(
-                                      coupon: coupon.text,
+                                      coupon: coupon.text == ""
+                                          ? "null"
+                                          : coupon.text,
                                       totalPrice: price,
                                       receiverInfo: uInfo);
                               Navigator.pop(context);
@@ -649,16 +703,15 @@ class _OrderScreenState extends State<OrderScreen> {
                                   payment.statusCode == 201) {
                                 String dataURL = "a";
                                 dataURL = jsonDecode(payment.body)['data'];
-                                print(dataURL);
+
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => PaymentPaypalScreen(
                                           url: dataURL,
+                                          coupon: idCoupon,
                                         )));
                               } else {
                                 snackBar("Thanh toán thất bại");
                               }
-
-                              print("Thanh toán online");
                             }
                           },
                           child: (typePayment == "COD")

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_store/src/models/product_model_s.dart';
+import 'package:mobile_store/src/providers/user_provider.dart';
 import 'package:mobile_store/src/repository/cart_repository.dart';
+import 'package:provider/provider.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final ProductModel product;
@@ -131,13 +133,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var model = Provider.of<UserProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: Text('Product Detail: ${widget.product.name}'),
         actions: [
           IconButton(
               onPressed: () {
-                print("Thêm vào giỏ hàng");
+                print("Giỏ hàng");
               },
               icon: Icon(Icons.shopping_cart))
         ],
@@ -185,6 +188,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         color: currentColors,
                         image: listImgs[0]);
                     if (status.statusCode == 200) {
+                      model.setHasCart = true;
                       snackBar("Thêm vào giỏ thành công");
                     } else {
                       snackBar("Lỗi");

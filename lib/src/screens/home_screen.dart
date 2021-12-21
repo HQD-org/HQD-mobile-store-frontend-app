@@ -5,7 +5,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:mobile_store/src/models/product_model_s.dart';
 import 'package:mobile_store/src/providers/product_provider.dart';
 import 'package:mobile_store/src/repository/brand_repo.dart';
-import 'package:mobile_store/src/repository/product_repository.dart';
+import 'package:mobile_store/src/screens/coupon/coupon_screen.dart';
 import 'package:mobile_store/src/screens/products/products_creen.dart';
 import 'package:mobile_store/src/widgets/brand_card.dart';
 import 'package:mobile_store/src/widgets/product_card.dart';
@@ -20,6 +20,12 @@ final List<String> imgList = [
   'asset/banner/bannere.jpg',
 ];
 
+final List<String> couponImageList = [
+  'asset/banner/coupona.jpg',
+  'asset/banner/couponb.jpg',
+  'asset/banner/couponc.jpg',
+  'asset/banner/coupone.jpg',
+];
 final List<Widget> imageSliders = imgList
     .map((item) => Container(
           child: Container(
@@ -48,6 +54,47 @@ final List<Widget> imageSliders = imgList
                             vertical: 10.0, horizontal: 20.0),
                         child: Text(
                           'Thỏa sức mua sắm tại HQD',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )),
+          ),
+        ))
+    .toList();
+final List<Widget> couponSliders = couponImageList
+    .map((item) => Container(
+          child: Container(
+            margin: EdgeInsets.all(5.0),
+            child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                child: Stack(
+                  children: <Widget>[
+                    Image.asset(item, fit: BoxFit.cover, width: 1000.0),
+                    Positioned(
+                      bottom: 0.0,
+                      left: 0.0,
+                      right: 0.0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Color.fromARGB(200, 0, 0, 0),
+                              Color.fromARGB(0, 0, 0, 0)
+                            ],
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                          ),
+                        ),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 20.0),
+                        child: Text(
+                          'Deal Hot HQD',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 20.0,
@@ -101,7 +148,44 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             items: imageSliders,
           ),
-
+          SizedBox(
+            height: 10.0,
+          ),
+          SizedBox(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Các mã giảm giá",
+                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                ),
+                ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.green[400]),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => CouponScreen()));
+                      print('Xem tất cả các mả giảm giá');
+                    },
+                    child: Text('View All'))
+              ],
+            ),
+            height: 50.0,
+          ),
+          SizedBox(
+            height: 5.0,
+          ),
+          CarouselSlider(
+            options: CarouselOptions(
+              aspectRatio: 2.0,
+              enlargeCenterPage: true,
+              scrollDirection: Axis.vertical,
+              autoPlay: true,
+            ),
+            items: couponSliders,
+          ),
           // có 2 cách xử lý trong trường hợp scroll trong widget Column
           // 1 - thêm 2 thuộc tính shrinkWrap: true và  physics: ScrollPhysics(), vào Widget ListView
           // 2 - bỏ Widget ListView() vào trong Widget SizedBox()

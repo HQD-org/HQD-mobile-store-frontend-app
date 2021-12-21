@@ -101,6 +101,9 @@ class _ItemCartState extends State<ItemCart> {
                           model.setPrice = currentPrice;
                           if (status.statusCode == 200) {
                             snackBar("Xóa sản phẩm thành công");
+                            if (model.getPrice == 0) {
+                              model.setHasCart = false;
+                            }
                             Navigator.of(context).popAndPushNamed('cart');
                           } else {
                             snackBar("Xóa sản phẩm thất bại");
@@ -247,6 +250,10 @@ class _ItemCartState extends State<ItemCart> {
                             model.setPrice = currentPrice;
                             if (remove.statusCode == 200) {
                               snackBar("Xóa sản phẩm thành công");
+                              if (model.getPrice == 0) {
+                                model.setHasCart = false;
+                              }
+                              Navigator.of(context).popAndPushNamed('cart');
                             } else {
                               snackBar("Xóa sản phẩm thất bại");
                             }

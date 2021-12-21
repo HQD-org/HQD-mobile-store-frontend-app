@@ -14,37 +14,38 @@ class OrderModel {
   List<ProductOrderModel> products;
   String idBranch;
   ReceiverInfo receiveInfo;
-  OrderModel({
-    required this.id,
-    required this.totalPrice,
-    required this.coupon,
-    required this.user,
-    required this.status,
-    required this.products,
-    required this.idBranch,
-    required this.receiveInfo,
-  });
+  String createdAt;
+  OrderModel(
+      {required this.id,
+      required this.totalPrice,
+      required this.coupon,
+      required this.user,
+      required this.status,
+      required this.products,
+      required this.idBranch,
+      required this.receiveInfo,
+      required this.createdAt});
 
-  OrderModel copyWith({
-    String? id,
-    int? totalPrice,
-    String? coupon,
-    String? user,
-    String? status,
-    List<ProductOrderModel>? products,
-    String? idBranch,
-    ReceiverInfo? receiveInfo,
-  }) {
+  OrderModel copyWith(
+      {String? id,
+      int? totalPrice,
+      String? coupon,
+      String? user,
+      String? status,
+      List<ProductOrderModel>? products,
+      String? idBranch,
+      ReceiverInfo? receiveInfo,
+      String? createAt}) {
     return OrderModel(
-      id: id ?? this.id,
-      totalPrice: totalPrice ?? this.totalPrice,
-      coupon: coupon ?? this.coupon,
-      user: user ?? this.user,
-      status: status ?? this.status,
-      products: products ?? this.products,
-      idBranch: idBranch ?? this.idBranch,
-      receiveInfo: receiveInfo ?? this.receiveInfo,
-    );
+        id: id ?? this.id,
+        totalPrice: totalPrice ?? this.totalPrice,
+        coupon: coupon ?? this.coupon,
+        user: user ?? this.user,
+        status: status ?? this.status,
+        products: products ?? this.products,
+        idBranch: idBranch ?? this.idBranch,
+        receiveInfo: receiveInfo ?? this.receiveInfo,
+        createdAt: createdAt);
   }
 
   Map<String, dynamic> toMap() {
@@ -57,21 +58,22 @@ class OrderModel {
       'products': products.map((x) => x.toMap()).toList(),
       'idBranch': idBranch,
       'receiveInfo': receiveInfo.toMap(),
+      'createdAt': createdAt
     };
   }
 
   factory OrderModel.fromMap(Map<String, dynamic> map) {
     return OrderModel(
-      id: map['_id'] ?? '',
-      totalPrice: map['totalPrice']?.toInt() ?? 0,
-      coupon: map['coupon'] ?? '',
-      user: map['user'] ?? '',
-      status: map['status'] ?? '',
-      products: List<ProductOrderModel>.from(
-          map['products']?.map((x) => ProductOrderModel.fromMap(x))),
-      idBranch: map['idBranch'] ?? '',
-      receiveInfo: ReceiverInfo.fromMap(map['receiveInfo']),
-    );
+        id: map['_id'] ?? '',
+        totalPrice: map['totalPrice']?.toInt() ?? 0,
+        coupon: map['coupon'] ?? '',
+        user: map['user'] ?? '',
+        status: map['status'] ?? '',
+        products: List<ProductOrderModel>.from(
+            map['products']?.map((x) => ProductOrderModel.fromMap(x))),
+        idBranch: map['idBranch'] ?? '',
+        receiveInfo: ReceiverInfo.fromMap(map['receiveInfo']),
+        createdAt: map['createdAt'] ?? '');
   }
 
   String toJson() => json.encode(toMap());

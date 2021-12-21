@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile_store/src/models/order_model.dart';
 import 'package:mobile_store/src/repository/order_repository.dart';
 import 'package:mobile_store/src/widgets/detail_order_widget.dart';
@@ -20,6 +21,19 @@ class _OrderCardState extends State<OrderCard> {
         duration: Duration(seconds: 2),
       ),
     );
+  }
+
+  String formattedDate(timeStamp) {
+    var dateFromTimeStamp =
+        DateTime.fromMicrosecondsSinceEpoch(timeStamp.seconds * 1000);
+    return DateFormat('dd-MM-yyyy').format(dateFromTimeStamp);
+  }
+
+  String convertDate(String date) {
+    String year = date.substring(0, 4);
+    String month = date.substring(5, 7);
+    String day = date.substring(8, 10);
+    return day + "/" + month + "/" + year;
   }
 
   @override
@@ -119,7 +133,7 @@ class _OrderCardState extends State<OrderCard> {
                   ),
                   Row(
                     children: [
-                      Text("Ngày tạo: "),
+                      Text("Ngày tạo: ${convertDate(widget.order.createdAt)}"),
                     ],
                   ),
                   SizedBox(

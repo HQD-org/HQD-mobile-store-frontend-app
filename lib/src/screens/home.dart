@@ -1,7 +1,9 @@
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_store/src/common/shared_preference_user.dart';
+import 'package:mobile_store/src/models/cart_model.dart';
 import 'package:mobile_store/src/providers/user_provider.dart';
+import 'package:mobile_store/src/repository/cart_repository.dart';
 import 'package:mobile_store/src/repository/user_repo.dart';
 import 'package:mobile_store/src/screens/Order/history_order_screen.dart';
 import 'package:mobile_store/src/screens/cart/cart_screen.dart';
@@ -12,6 +14,7 @@ import 'package:mobile_store/src/screens/login_screen.dart';
 import 'package:mobile_store/src/screens/profile_screen.dart';
 import 'package:mobile_store/src/screens/search_by_price_screen.dart';
 import 'package:mobile_store/src/screens/search_screen.dart';
+import 'package:provider/provider.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -31,6 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
   double _drawerIconSize = 24;
   List<int> groupSelect = [1, 2, 3];
   int select = 1;
+  double totalPrice = 0;
   @override
   void initState() {
     super.initState();
@@ -43,12 +47,26 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       }
     });
+    getDataCart();
   }
 
   @override
   void dispose() {
     super.dispose();
     search.dispose();
+  }
+
+  // mới thêm đoạn này nha
+  getDataCart() async {
+    var model = Provider.of<UserProvider>(context, listen: false);
+    CartModel? cartModel = await CartRepository().getdataCartAPI();
+    var dataPrice = cartModel!.products;
+    dataPrice.forEach((e) {
+      totalPrice = totalPrice + (e.price.toDouble() * e.quantity);
+    });
+    if (totalPrice > 0) {
+      model.setHasCart = true;
+    }
   }
 
   showFilterPrice(BuildContext context) => showDialog(
@@ -70,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         setState(() {
                           select = 1;
                         });
+                        Navigator.of(context).pop();
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => SearchByPriceScreen(
                                   selected: select,
@@ -86,6 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         setState(() {
                           select = 2;
                         });
+                        Navigator.of(context).pop();
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => SearchByPriceScreen(
                                   selected: select,
@@ -102,6 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         setState(() {
                           select = 3;
                         });
+                        Navigator.of(context).pop();
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => SearchByPriceScreen(
                                   selected: select,

@@ -37,6 +37,8 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.grey,
           accentColor: _accentColor,
           primaryColor: _pimaryColors,
+          appBarTheme:
+              AppBarTheme(iconTheme: IconThemeData(color: Colors.white)),
           //scaffoldBackgroundColor: Colors.grey,
         ),
         home: AppMobileStore(),
