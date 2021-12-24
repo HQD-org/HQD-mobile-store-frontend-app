@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:mobile_store/src/common/shared_preference_user.dart';
 import 'package:mobile_store/src/models/user_model.dart';
@@ -12,6 +13,7 @@ import 'package:mobile_store/src/screens/login_screen.dart';
 import 'package:mobile_store/src/screens/update_info_screen.dart';
 import 'package:mobile_store/src/widgets/header_widget.dart';
 import 'package:http/http.dart' as http;
+import 'package:mobile_store/src/widgets/number_widget.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -28,6 +30,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     user = userProvider.getUser!;
+  }
+
+  Widget builIcon(IconData icon) {
+    return CircleAvatar(
+      radius: 25,
+      child: Center(
+        child: Icon(
+          icon,
+          size: 32,
+          color: Colors.blue.shade500,
+        ),
+      ),
+    );
   }
 
   @override
@@ -230,24 +245,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      border: Border.all(width: 10.0, color: Colors.white),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 20,
-                            offset: const Offset(5, 5))
-                      ],
-                    ),
-                    child: Icon(
-                      Icons.person,
-                      size: 80,
-                      color: Colors.grey.shade500,
-                    ),
-                  ),
+                      padding: EdgeInsets.all(10.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(width: 10.0, color: Colors.white),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 20,
+                              offset: const Offset(5, 5))
+                        ],
+                      ),
+                      child: CircleAvatar(
+                        backgroundColor: Colors.grey.shade800,
+                        backgroundImage: AssetImage('asset/banner/avata.jpg'),
+                      )
+                      //Icon(
+                      //   Icons.person,
+                      //   size: 80,
+                      //   color: Colors.grey.shade500,
+                      // ),
+                      ),
                   SizedBox(
                     height: 20.0,
                   ),
@@ -266,6 +285,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
+                    height: 10.0,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      builIcon(FontAwesomeIcons.gift),
+                      builIcon(FontAwesomeIcons.facebook),
+                      builIcon(FontAwesomeIcons.instagram),
+                      builIcon(FontAwesomeIcons.twitter),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 15.0,
+                  ),
+                  NumberWidget(),
+                  SizedBox(
                     height: 15,
                   ),
                   Card(
@@ -283,18 +318,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     contentPadding: EdgeInsets.symmetric(
                                         horizontal: 12, vertical: 4),
                                     leading: Icon(Icons.my_location),
-                                    title: Text("Location"),
+                                    title: Text("Địa chỉ"),
                                     subtitle: Text(
                                         "${user.address.detail}, ${user.address.province}"),
                                     onTap: () {},
                                   ),
                                   ListTile(
-                                    leading: Icon(Icons.email),
+                                    leading: Icon(
+                                      Icons.email,
+                                      color: Colors.red,
+                                    ),
                                     title: Text("Email"),
                                     subtitle: Text("${user.email}"),
                                   ),
                                   ListTile(
-                                    leading: Icon(Icons.phone),
+                                    leading: Icon(
+                                      Icons.phone,
+                                      color: Colors.green,
+                                    ),
                                     title: Text("Phone"),
                                     subtitle: Text("${user.phone}"),
                                   ),

@@ -10,8 +10,10 @@ class OrderRepository {
     required double totalPrice,
     required List<Map<String, dynamic>> products,
     required Map<String, dynamic> receiverInfo,
+    required String idBranch,
   }) async {
     var dataBody = {
+      "idBranch": idBranch,
       "products": products,
       "totalPrice": totalPrice,
       "coupon": coupon,

@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_store/src/common/theme_helper.dart';
 import 'package:mobile_store/src/controllers/location_controller.dart';
+import 'package:mobile_store/src/models/branch_model.dart';
 import 'package:mobile_store/src/models/cart_model.dart';
 import 'package:mobile_store/src/models/coupon_model.dart';
 import 'package:mobile_store/src/models/data_product_model.dart';
@@ -65,7 +66,10 @@ class _OrderScreenState extends State<OrderScreen> {
   double price = 0;
   double discount = 0;
   String idCoupon = "null";
+  String idBranch = "61a23e0527b5b90016616975";
   late UserModel user;
+  List<BranchModel> listBranch = [];
+  late BranchModel selectedBranch;
   snackBar(String? message) {
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -94,6 +98,12 @@ class _OrderScreenState extends State<OrderScreen> {
     super.initState();
     getDataCart();
     user = userProvider.getUser!;
+    listBranch = userProvider.getAllBranch!;
+    listBranch.forEach((element) {
+      if (element.id == "61a23e0527b5b90016616975") {
+        selectedBranch = element;
+      }
+    });
     name.text = user.name;
     phone.text = user.phone;
     addressDetail.text = user.address.detail;
@@ -559,6 +569,45 @@ class _OrderScreenState extends State<OrderScreen> {
                     ),
                   ]),
                   SizedBox(
+                    height: 5.0,
+                  ),
+                  Row(
+                    children: [Text("Chọn cửa hàng gần nhà bạn")],
+                  ),
+                  SizedBox(
+                    height: 5.0,
+                  ),
+                  Row(children: [
+                    Container(
+                      height: 45,
+                      width: 360,
+                      padding: EdgeInsets.fromLTRB(20, 10, 12, 10),
+                      child: DropdownButton<BranchModel>(
+                        hint: Text('Chọn cửa hàng gần nhà'),
+                        value: selectedBranch,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedBranch = value!;
+                            idBranch = selectedBranch.id;
+                            print(idBranch);
+                          });
+                        },
+                        items: listBranch.map((e) {
+                          return DropdownMenuItem(
+                            child: new Text(
+                              e.address.district + " " + e.address.province,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            value: e,
+                          );
+                        }).toList(),
+                      ),
+                      decoration: BoxDecoration(
+                          border: Border.all(width: 1, color: Colors.grey),
+                          borderRadius: BorderRadius.circular(30)),
+                    ),
+                  ]),
+                  SizedBox(
                     height: 10.0,
                   ),
                   Row(
@@ -629,6 +678,7 @@ class _OrderScreenState extends State<OrderScreen> {
 
                               var status =
                                   await OrderRepository().createOrderCODAPI(
+                                idBranch: idBranch,
                                 receiverInfo: uInfo,
                                 coupon:
                                     coupon.text == "" ? "null" : coupon.text,

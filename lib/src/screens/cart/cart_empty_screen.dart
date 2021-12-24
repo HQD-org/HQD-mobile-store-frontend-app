@@ -11,7 +11,7 @@ class CartEmptyScreenState extends StatelessWidget {
           Container(
             margin: EdgeInsets.only(top: 40),
             padding: EdgeInsets.all(15.0),
-            width: double.infinity,
+            width: 350,
             height: MediaQuery.of(context).size.height * 0.4,
             decoration: BoxDecoration(
               image: DecorationImage(

@@ -293,6 +293,7 @@ class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
                                           village: village,
                                           phone: phone.text);
                                   Navigator.pop(context);
+
                                   if (status.statusCode == 200) {
                                     await UserRepository()
                                         .getMyProfile()

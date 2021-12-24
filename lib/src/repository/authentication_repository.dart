@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart';
 import 'package:mobile_store/src/common/api_gateway.dart';
 import 'package:mobile_store/src/repository/base_repository.dart';
@@ -63,6 +65,8 @@ class AuthenticationRepository {
     Response response =
         await BaseRepository().post(ApiGateway.updateProfile, dataBody);
     //print(response.toString());
+    var jsonResponse = jsonDecode(response.body)['message'];
+    print(jsonResponse.toString());
     return response;
   }
 }

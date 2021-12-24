@@ -6,6 +6,7 @@ import 'package:mobile_store/src/models/product_order_model.dart';
 class DetailOrderScreen extends StatelessWidget {
   final OrderModel detailOrder;
   DetailOrderScreen({required this.detailOrder});
+
   @override
   Widget build(BuildContext context) {
     double price = 0;
@@ -17,7 +18,10 @@ class DetailOrderScreen extends StatelessWidget {
     discount = price + 30000 - detailOrder.totalPrice;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Chi tiết hóa đơn"),
+        title: Text(
+          "Chi tiết hóa đơn",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -280,6 +284,19 @@ class DetailOrderScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
+                    "Mã giảm giá",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  Text(
+                    "${detailOrder.coupon}",
+                    style: TextStyle(fontSize: 18),
+                  )
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
                     "Tạm tính",
                     style: TextStyle(fontSize: 18),
                   ),
@@ -328,6 +345,31 @@ class DetailOrderScreen extends StatelessWidget {
                   )
                 ],
               ),
+              SizedBox(
+                height: 5.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Ghi chú",
+                    style: TextStyle(fontSize: 18, color: Colors.blue.shade600),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 5.0,
+              ),
+              Container(
+                width: MediaQuery.of(context).size.height,
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.orange.shade500),
+                    borderRadius: BorderRadius.circular(8.0)),
+                child: Padding(
+                    padding: EdgeInsets.all(5.0),
+                    child: Text(detailOrder.receiveInfo.message,
+                        style: TextStyle(fontSize: 18))),
+              )
             ],
           ),
         ),

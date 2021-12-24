@@ -1,13 +1,16 @@
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_store/src/common/shared_preference_user.dart';
+import 'package:mobile_store/src/models/branch_model.dart';
 import 'package:mobile_store/src/models/cart_model.dart';
 import 'package:mobile_store/src/providers/user_provider.dart';
+import 'package:mobile_store/src/repository/branch_repository.dart';
 import 'package:mobile_store/src/repository/cart_repository.dart';
 import 'package:mobile_store/src/repository/user_repo.dart';
 import 'package:mobile_store/src/screens/Order/history_order_screen.dart';
 import 'package:mobile_store/src/screens/cart/cart_screen.dart';
 import 'package:mobile_store/src/screens/favorite_screen.dart';
+import 'package:mobile_store/src/screens/feedback/feedback_screen.dart';
 import 'package:mobile_store/src/screens/home_screen.dart';
 import 'package:mobile_store/src/screens/list_user_screen.dart';
 import 'package:mobile_store/src/screens/login_screen.dart';
@@ -48,6 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
     getDataCart();
+    getDataBranch();
   }
 
   @override
@@ -66,6 +70,20 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     if (totalPrice > 0) {
       model.setHasCart = true;
+    }
+  }
+
+  getDataBranch() async {
+    var model = Provider.of<UserProvider>(context, listen: false);
+    List<BranchModel> list = [];
+    List<BranchModel>? getFromAPI = await BranchRepository().getDataBranch();
+    getFromAPI!.forEach((element) {
+      if (element.status == 'open') {
+        list.add(element);
+      }
+    });
+    if (list.length > 0) {
+      model.setAllBranch = list;
     }
   }
 
@@ -153,19 +171,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
     switch (_index) {
       case 0:
-        child = ListUserScreen(); // list
+        child = ListUserScreen();
         break;
       case 1:
-        child = FavoriteScreent(); // profile
+        child = FavoriteScreent();
         break;
       case 2:
-        child = HomeScreen(); // yêu thích
+        child = HomeScreen();
         break;
       case 3:
-        child = Text("Thông tin về HQD"); // yêu thích
+        child = Text("Thông tin về HQD");
         break;
       default:
-        child = Text('Liên lạc với chúng tôi'); // giỏ hàng
+        child = FeedbackScreen();
         break;
     }
 
