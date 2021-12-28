@@ -70,6 +70,7 @@ class _OrderScreenState extends State<OrderScreen> {
   late UserModel user;
   List<BranchModel> listBranch = [];
   late BranchModel selectedBranch;
+  var model = userProvider;
   snackBar(String? message) {
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -331,7 +332,14 @@ class _OrderScreenState extends State<OrderScreen> {
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [Text("Tên người nhận"), Text(name.text)],
+                  children: [
+                    Text(
+                      "Tên người nhận",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    Text(name.text)
+                  ],
                 ),
                 SizedBox(
                   height: 10.0,
@@ -339,7 +347,11 @@ class _OrderScreenState extends State<OrderScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Số điện thoại người nhận"),
+                    Text(
+                      "Số điện thoại người nhận",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                     Text(phone.text)
                   ],
                 ),
@@ -348,7 +360,11 @@ class _OrderScreenState extends State<OrderScreen> {
                 ),
                 Row(
                   children: [
-                    Text("Địa chỉ nhận hàng: "),
+                    Text(
+                      "Địa chỉ nhận hàng: ",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                   ],
                 ),
                 SizedBox(
@@ -366,7 +382,11 @@ class _OrderScreenState extends State<OrderScreen> {
                 ),
                 Row(
                   children: [
-                    Text("Đơn hàng"),
+                    Text(
+                      "Đơn hàng",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                   ],
                 ),
                 SizedBox(
@@ -475,19 +495,47 @@ class _OrderScreenState extends State<OrderScreen> {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [Text("Tạm tính"), Text("$totalPrice-VNĐ")],
+                  children: [
+                    Text(
+                      "Tạm tính",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    Text("$totalPrice-VNĐ")
+                  ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [Text("Phí vận chuyển"), Text("30.000-VNĐ")],
+                  children: [
+                    Text(
+                      "Phí vận chuyển",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    Text("30.000-VNĐ")
+                  ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [Text("khuyến Mãi"), Text("-$discount-VNĐ")],
+                  children: [
+                    Text(
+                      "khuyến Mãi",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    Text("-$discount-VNĐ")
+                  ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [Text("Tổng tính"), Text("$price-VNĐ")],
+                  children: [
+                    Text(
+                      "Tổng tính",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    Text("$price-VNĐ")
+                  ],
                 ),
               ],
             ),
@@ -690,7 +738,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                   status.statusCode == 201) {
                                 var applyCoupon = await CouponRepository()
                                     .applyCouponAPI(idCoupon);
-
+                                model.setHasCart = false;
                                 if (applyCoupon.statusCode == 200) {
                                   showDialog(
                                       context: context,
@@ -743,6 +791,7 @@ class _OrderScreenState extends State<OrderScreen> {
                               var uInfo = info1.toJson();
                               var payment = await OrderRepository()
                                   .createOrderOnlineAPI(
+                                      idBranch: idBranch,
                                       coupon: coupon.text == ""
                                           ? "null"
                                           : coupon.text,
@@ -778,7 +827,10 @@ class _OrderScreenState extends State<OrderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Tạo hóa đơn"),
+          title: Text(
+            "Tạo hóa đơn",
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         body: Theme(
           data: ThemeData(

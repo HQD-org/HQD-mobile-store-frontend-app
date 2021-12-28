@@ -28,7 +28,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   List<String> productColors = [];
   List<String> productsRAM = [];
   List<String> productsCapacity = [];
-
+  bool isActive = true;
+  int dem = 0;
   Widget customRadio(String text, int index) {
     return ElevatedButton(
       onPressed: () {
@@ -126,9 +127,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
     for (int i = 0; i < widget.product.color.length; i++) {
       productColors.add(widget.product.color[i].name);
+      widget.product.color[i].quantityInfo.forEach((element) {
+        dem = dem + element.quantity;
+      });
     }
     productsRAM.add(widget.product.ram);
     productsCapacity.add(widget.product.capacity);
+    if (widget.product.status == "active" && dem > 0) {
+      isActive = true;
+    } else {
+      isActive = false;
+    }
   }
 
   @override
@@ -136,7 +145,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     var model = Provider.of<UserProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Product Detail: ${widget.product.name}'),
+        title: Text(
+          'Sản phẩm: ${widget.product.name}',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           IconButton(
               onPressed: () {
@@ -165,48 +177,57 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     fontWeight: FontWeight.bold,
                     color: Colors.red),
               ),
-              ElevatedButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(Colors.pinkAccent)),
-                  onPressed: () async {
-                    if (currentRAM == "Chưa chọn RAM") {
-                      snackBar("Chưa chọn Ram");
-                      return;
-                    }
-                    if (currentCapacity == "Chưa chọn dung lượng") {
-                      snackBar("Chưa chọn dung lượng");
-                      return;
-                    }
-                    if (currentColors == "Chưa chọn màu") {
-                      snackBar("Chưa chọn màu");
-                      return;
-                    }
+              isActive
+                  ? ElevatedButton(
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.pinkAccent)),
+                      onPressed: () async {
+                        if (currentRAM == "Chưa chọn RAM") {
+                          snackBar("Chưa chọn Ram");
+                          return;
+                        }
+                        if (currentCapacity == "Chưa chọn dung lượng") {
+                          snackBar("Chưa chọn dung lượng");
+                          return;
+                        }
+                        if (currentColors == "Chưa chọn màu") {
+                          snackBar("Chưa chọn màu");
+                          return;
+                        }
 
-                    var status = await CartRepository().addToCartAPI(
-                        idProduct: widget.product.id,
-                        color: currentColors,
-                        image: listImgs[0]);
-                    if (status.statusCode == 200) {
-                      model.setHasCart = true;
-                      snackBar("Thêm vào giỏ thành công");
-                    } else {
-                      snackBar("Lỗi");
-                    }
-                  },
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.shopping_bag,
-                        size: 30,
-                        color: Colors.white,
+                        var status = await CartRepository().addToCartAPI(
+                            idProduct: widget.product.id,
+                            color: currentColors,
+                            image: listImgs[0]);
+                        if (status.statusCode == 200) {
+                          model.setHasCart = true;
+                          snackBar("Thêm vào giỏ thành công");
+                        } else {
+                          snackBar("Lỗi");
+                        }
+                      },
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.shopping_bag,
+                            size: 30,
+                            color: Colors.white,
+                          ),
+                          Text(
+                            "Add to cart",
+                            style: TextStyle(fontSize: 25, color: Colors.white),
+                          )
+                        ],
                       ),
-                      Text(
-                        "Add to cart",
-                        style: TextStyle(fontSize: 25, color: Colors.white),
-                      )
-                    ],
-                  ))
+                    )
+                  : Text(
+                      "Hết hàng",
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.red.shade500,
+                          fontWeight: FontWeight.bold),
+                    ),
             ],
           ),
         ),
@@ -423,9 +444,28 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   Text(
                     "Chi tiết sản phẩm",
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 20,
                       color: Colors.red,
                     ),
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "Trạng thái: ",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Text(
+                        isActive ? "Còn hàng" : "Ngừng kinh doanh",
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: isActive
+                                ? Colors.green.shade500
+                                : Colors.red.shade500),
+                      )
+                    ],
                   ),
                   SizedBox(
                     height: 10.0,

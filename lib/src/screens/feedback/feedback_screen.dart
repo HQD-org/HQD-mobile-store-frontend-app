@@ -23,6 +23,15 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   TextEditingController phone = new TextEditingController();
   late UserModel user;
 
+  snackBar(String? message) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message!),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -202,7 +211,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                             question.text,
                                     name: user.name,
                                     phone: phone.text);
-                                print("Hello");
+                                snackBar("Gửi đánh giá thành công");
                               },
                               child: Text(
                                 "Gửi",

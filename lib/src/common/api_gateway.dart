@@ -34,4 +34,7 @@ class ApiGateway {
 
   // Branch
   static const String getDataBranch = "branch/get-all";
+
+  // Question
+  static const String getDataQuestion = "question/get-all";
 }

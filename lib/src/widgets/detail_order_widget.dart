@@ -33,11 +33,11 @@ class DetailOrderScreen extends StatelessWidget {
                 children: [
                   Text(
                     "Tên người nhận",
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     detailOrder.receiveInfo.receiver,
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 16),
                   )
                 ],
               ),
@@ -48,12 +48,12 @@ class DetailOrderScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Số điện thoại người nhận",
-                    style: TextStyle(fontSize: 18),
+                    "Điện thoại người nhận",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     detailOrder.receiveInfo.phone,
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 16),
                   )
                 ],
               ),
@@ -64,7 +64,7 @@ class DetailOrderScreen extends StatelessWidget {
                 children: [
                   Text(
                     "Địa chỉ nhận hàng: ",
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -76,7 +76,7 @@ class DetailOrderScreen extends StatelessWidget {
                   "${detailOrder.receiveInfo.address}",
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
               SizedBox(
@@ -86,7 +86,10 @@ class DetailOrderScreen extends StatelessWidget {
                 children: [
                   Text(
                     "Đơn hàng",
-                    style: TextStyle(fontSize: 18, color: Colors.red),
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -285,11 +288,11 @@ class DetailOrderScreen extends StatelessWidget {
                 children: [
                   Text(
                     "Mã giảm giá",
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     "${detailOrder.coupon}",
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 16),
                   )
                 ],
               ),
@@ -298,11 +301,11 @@ class DetailOrderScreen extends StatelessWidget {
                 children: [
                   Text(
                     "Tạm tính",
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     "$price-VNĐ",
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 16),
                   )
                 ],
               ),
@@ -311,11 +314,11 @@ class DetailOrderScreen extends StatelessWidget {
                 children: [
                   Text(
                     "Phí vận chuyển",
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     "30.000-VNĐ",
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 16),
                   )
                 ],
               ),
@@ -324,11 +327,11 @@ class DetailOrderScreen extends StatelessWidget {
                 children: [
                   Text(
                     "khuyến Mãi",
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     "-$discount-VNĐ",
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 16),
                   )
                 ],
               ),
@@ -337,11 +340,11 @@ class DetailOrderScreen extends StatelessWidget {
                 children: [
                   Text(
                     "Tổng tính",
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     "${detailOrder.totalPrice}-VNĐ",
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 16),
                   )
                 ],
               ),

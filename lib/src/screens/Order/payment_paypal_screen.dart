@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_store/src/providers/user_provider.dart';
 import 'package:mobile_store/src/repository/coupon_repository.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:io';
@@ -16,6 +17,7 @@ class PaymentPaypalScreen extends StatefulWidget {
 class _PaymentPaypalScreenState extends State<PaymentPaypalScreen> {
   late WebViewController controller;
   String status = "success";
+  var model = userProvider;
   @override
   void initState() {
     super.initState();
@@ -52,6 +54,7 @@ class _PaymentPaypalScreenState extends State<PaymentPaypalScreen> {
             setState(() {
               status = "success";
             });
+            model.setHasCart = false;
             var applyCoupon =
                 await CouponRepository().applyCouponAPI(widget.coupon);
             if (applyCoupon.statusCode == 200) {

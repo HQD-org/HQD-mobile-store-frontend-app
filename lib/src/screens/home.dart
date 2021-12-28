@@ -15,6 +15,7 @@ import 'package:mobile_store/src/screens/home_screen.dart';
 import 'package:mobile_store/src/screens/list_user_screen.dart';
 import 'package:mobile_store/src/screens/login_screen.dart';
 import 'package:mobile_store/src/screens/profile_screen.dart';
+import 'package:mobile_store/src/screens/question_screen.dart';
 import 'package:mobile_store/src/screens/search_by_price_screen.dart';
 import 'package:mobile_store/src/screens/search_screen.dart';
 import 'package:provider/provider.dart';
@@ -180,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child = HomeScreen();
         break;
       case 3:
-        child = Text("Thông tin về HQD");
+        child = Text("Thông tin của app");
         break;
       default:
         child = FeedbackScreen();
@@ -350,7 +351,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       fontSize: 17, color: Colors.purple.withOpacity(0.8)),
                 ),
                 onTap: () {
-                  print("Chuyển đến Trang cá nhân");
                   Navigator.of(context).push(
                       MaterialPageRoute(builder: (context) => ProfileScreen()));
                 },
@@ -367,14 +367,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       fontSize: 17, color: Colors.purple.withOpacity(0.8)),
                 ),
                 onTap: () {
-                  print("Chuyển đến Trang lịch sử mua hàng");
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => HistoryOrderScreen()));
                 },
               ),
               ListTile(
                 leading: Icon(
-                  Icons.people,
+                  Icons.shopping_bag,
                   size: _drawerIconSize,
                   color: Colors.purple.withOpacity(0.8),
                 ),
@@ -384,9 +383,24 @@ class _MyHomePageState extends State<MyHomePage> {
                       fontSize: 17, color: Colors.purple.withOpacity(0.8)),
                 ),
                 onTap: () {
-                  print("Chuyển đến Trang cá nhân");
                   Navigator.of(context).push(
                       MaterialPageRoute(builder: (context) => CartScreen()));
+                },
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.info,
+                  size: _drawerIconSize,
+                  color: Colors.purple.withOpacity(0.8),
+                ),
+                title: Text(
+                  "Câu hỏi",
+                  style: TextStyle(
+                      fontSize: 17, color: Colors.purple.withOpacity(0.8)),
+                ),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => QuestionScreen()));
                 },
               ),
               ListTile(
@@ -401,7 +415,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       fontSize: 17, color: Colors.purple.withOpacity(0.8)),
                 ),
                 onTap: () {
-                  print("Chuyển đến Trang Login");
                   UserSharedPreference.clearAccessToken();
                   Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (context) => LoginScreen()),

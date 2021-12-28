@@ -49,7 +49,7 @@ class _ItemCartState extends State<ItemCart> {
   Widget build(BuildContext context) {
     var model = Provider.of<UserProvider>(context, listen: false);
     return Container(
-      height: 170,
+      height: 180,
       margin: EdgeInsets.all(10.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
@@ -130,11 +130,17 @@ class _ItemCartState extends State<ItemCart> {
                         "${widget.itemModel.ram}-${widget.itemModel.capacity}"),
                   ],
                 ),
+                SizedBox(
+                  height: 4.0,
+                ),
                 Row(
                   children: [
                     Text("Màu: "),
                     Text("${widget.item.color}"),
                   ],
+                ),
+                SizedBox(
+                  height: 4.0,
                 ),
                 Row(
                   children: [

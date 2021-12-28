@@ -94,7 +94,10 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Search page"),
+          title: Text(
+            "Search page",
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         bottomSheet: checkOutSection(),
         body: isLoading

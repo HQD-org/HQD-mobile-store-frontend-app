@@ -29,9 +29,10 @@ class OrderRepository {
   Future<http.Response> createOrderOnlineAPI(
       {required String coupon,
       required double totalPrice,
-      required Map<String, dynamic> receiverInfo}) async {
+      required Map<String, dynamic> receiverInfo,
+      required String idBranch}) async {
     var dataBody = {
-      "idBranch": "",
+      "idBranch": idBranch,
       "coupon": coupon,
       "price": totalPrice,
       "receiveInfo": receiverInfo
