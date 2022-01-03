@@ -6,7 +6,7 @@ class ReceiverInfo {
   final String address;
   final String receiveAt;
   final String timeReceive;
-  //final String typePayment;
+  final String status;
   final String message;
   ReceiverInfo({
     required this.receiver,
@@ -14,6 +14,7 @@ class ReceiverInfo {
     required this.address,
     required this.receiveAt,
     required this.timeReceive,
+    required this.status,
     required this.message,
   });
   // ReceiverInfo(
@@ -32,7 +33,7 @@ class ReceiverInfo {
       'address': address,
       'receiveAt': receiveAt,
       'timeReceive': timeReceive,
-      //'typePayment': typePayment,
+      'status': status,
       'message': message
     };
   }
@@ -45,6 +46,7 @@ class ReceiverInfo {
     String? address,
     String? receiveAt,
     String? timeReceive,
+    String? status,
     String? message,
   }) {
     return ReceiverInfo(
@@ -53,6 +55,7 @@ class ReceiverInfo {
       address: address ?? this.address,
       receiveAt: receiveAt ?? this.receiveAt,
       timeReceive: timeReceive ?? this.timeReceive,
+      status: status ?? this.status,
       message: message ?? this.message,
     );
   }
@@ -64,6 +67,7 @@ class ReceiverInfo {
       'address': address,
       'receiveAt': receiveAt,
       'timeReceive': timeReceive,
+      'status': status,
       'message': message,
     };
   }
@@ -75,6 +79,7 @@ class ReceiverInfo {
       address: map['address'] ?? '',
       receiveAt: map['receiveAt'] ?? '',
       timeReceive: map['timeReceive'] ?? '',
+      status: map['status'] ?? '',
       message: map['message'] ?? '',
     );
   }

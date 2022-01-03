@@ -709,17 +709,16 @@ class _OrderScreenState extends State<OrderScreen> {
                               } else {
                                 reAt = "at store";
                               }
-                              ReceiverInfo info = new ReceiverInfo(
-                                  receiver: name.text,
-                                  phone: phone.text,
-                                  address:
-                                      "${addressDetail.text}, $village, $district, $province",
-                                  receiveAt: reAt,
-                                  timeReceive: timeRe,
-                                  // typePayment: typePayment,
-                                  message:
-                                      note.text == "" ? "null" : note.text);
-                              var uInfo = info.toJson();
+                              Map<String, dynamic> info = {
+                                "receiver": name.text,
+                                "phone": phone.text,
+                                "address":
+                                    "${addressDetail.text}, $village, $district, $province",
+                                "receiveAt": reAt,
+                                "timeReceive": timeRe,
+                                "message": note.text == "" ? "null" : note.text
+                              };
+                              // var uInfo = info.toJson();
 
                               var listp =
                                   products.map((e) => e.toJson()).toList();
@@ -727,7 +726,7 @@ class _OrderScreenState extends State<OrderScreen> {
                               var status =
                                   await OrderRepository().createOrderCODAPI(
                                 idBranch: idBranch,
-                                receiverInfo: uInfo,
+                                receiverInfo: info,
                                 coupon:
                                     coupon.text == "" ? "null" : coupon.text,
                                 totalPrice: price,
@@ -778,17 +777,16 @@ class _OrderScreenState extends State<OrderScreen> {
                               } else {
                                 reAt1 = "at store";
                               }
-                              ReceiverInfo info1 = new ReceiverInfo(
-                                  receiver: name.text,
-                                  phone: phone.text,
-                                  address:
-                                      "${addressDetail.text}, $village, $district, $province",
-                                  receiveAt: reAt1,
-                                  timeReceive: timeRe1,
-                                  // typePayment: typePayment,
-                                  message:
-                                      note.text == "" ? "null" : note.text);
-                              var uInfo = info1.toJson();
+                              Map<String, dynamic> info1 = {
+                                "receiver": name.text,
+                                "phone": phone.text,
+                                "address":
+                                    "${addressDetail.text}, $village, $district, $province",
+                                "receiveAt": reAt1,
+                                "timeReceive": timeRe1,
+                                "message": note.text == "" ? "null" : note.text
+                              };
+                              // var uInfo = info1.toJson();
                               var payment = await OrderRepository()
                                   .createOrderOnlineAPI(
                                       idBranch: idBranch,
@@ -796,7 +794,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                           ? "null"
                                           : coupon.text,
                                       totalPrice: price,
-                                      receiverInfo: uInfo);
+                                      receiverInfo: info1);
                               Navigator.pop(context);
                               if (payment.statusCode == 200 ||
                                   payment.statusCode == 201) {

@@ -15,6 +15,7 @@ class OrderModel {
   String idBranch;
   ReceiverInfo receiveInfo;
   String createdAt;
+  String saleId;
   OrderModel(
       {required this.id,
       required this.totalPrice,
@@ -24,7 +25,8 @@ class OrderModel {
       required this.products,
       required this.idBranch,
       required this.receiveInfo,
-      required this.createdAt});
+      required this.createdAt,
+      required this.saleId});
 
   OrderModel copyWith(
       {String? id,
@@ -35,7 +37,8 @@ class OrderModel {
       List<ProductOrderModel>? products,
       String? idBranch,
       ReceiverInfo? receiveInfo,
-      String? createAt}) {
+      String? createAt,
+      String? saleId}) {
     return OrderModel(
         id: id ?? this.id,
         totalPrice: totalPrice ?? this.totalPrice,
@@ -45,7 +48,8 @@ class OrderModel {
         products: products ?? this.products,
         idBranch: idBranch ?? this.idBranch,
         receiveInfo: receiveInfo ?? this.receiveInfo,
-        createdAt: createdAt);
+        createdAt: createdAt,
+        saleId: saleId ?? this.saleId);
   }
 
   Map<String, dynamic> toMap() {
@@ -58,7 +62,8 @@ class OrderModel {
       'products': products.map((x) => x.toMap()).toList(),
       'idBranch': idBranch,
       'receiveInfo': receiveInfo.toMap(),
-      'createdAt': createdAt
+      'createdAt': createdAt,
+      'saleId': saleId
     };
   }
 
@@ -73,7 +78,8 @@ class OrderModel {
             map['products']?.map((x) => ProductOrderModel.fromMap(x))),
         idBranch: map['idBranch'] ?? '',
         receiveInfo: ReceiverInfo.fromMap(map['receiveInfo']),
-        createdAt: map['createdAt'] ?? '');
+        createdAt: map['createdAt'] ?? '',
+        saleId: map['saleId'] ?? '');
   }
 
   String toJson() => json.encode(toMap());

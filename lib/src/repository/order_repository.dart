@@ -66,6 +66,14 @@ class OrderRepository {
         await BaseRepository().post(ApiGateway.cancelOrder, dataBody);
     return response;
   }
+
+  Future<http.Response> refundPaymentAPI(
+      String saleID, double totalPrice) async {
+    var dataBody = {"saleId": saleID, "totalPrice": totalPrice};
+    http.Response response =
+        await BaseRepository().post(ApiGateway.refundPayment, dataBody);
+    return response;
+  }
   // Future<http.Response> createOrderCODAPI2({
   //   required String idUser,
   //   required String coupon,

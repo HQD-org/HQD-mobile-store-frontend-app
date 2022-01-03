@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_store/src/models/order_model.dart';
 import 'package:mobile_store/src/repository/order_repository.dart';
 import 'package:mobile_store/src/widgets/detail_order_widget.dart';
+import 'package:mobile_store/src/widgets/dialog_loading.dart';
 
 class OrderCard extends StatefulWidget {
   final OrderModel order;
@@ -98,8 +101,21 @@ class _OrderCardState extends State<OrderCard> {
                               var status = await OrderRepository()
                                   .cancelOrderAPI(widget.order.id);
                               if (status.statusCode == 200) {
-                                Navigator.of(context)
-                                    .popAndPushNamed('history');
+                                if (widget.order.receiveInfo.status ==
+                                    'online') {
+                                  showDialogLoading(context);
+                                  var refund = await OrderRepository()
+                                      .refundPaymentAPI(widget.order.saleId,
+                                          widget.order.totalPrice.toDouble());
+                                  var jsonRefund = jsonDecode(refund.body);
+                                  print(jsonRefund['message']);
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context)
+                                      .popAndPushNamed('history');
+                                } else {
+                                  Navigator.of(context)
+                                      .popAndPushNamed('history');
+                                }
                               } else {
                                 snackBar("Xóa hóa đơn thất bại");
                               }
@@ -155,7 +171,7 @@ class _OrderCardState extends State<OrderCard> {
                     ],
                   ),
                   SizedBox(
-                    height: 7.0,
+                    height: 5.0,
                   ),
                   Container(
                     child: Row(
@@ -163,7 +179,17 @@ class _OrderCardState extends State<OrderCard> {
                         Text('Tổng tiền: ${widget.order.totalPrice}-VNĐ')
                       ],
                     ),
-                  )
+                  ),
+                  SizedBox(
+                    height: 5.0,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                          "Hình thức thanh toán: ${widget.order.receiveInfo.status}"),
+                      // Text("${widget.item.price}-VNĐ"),
+                    ],
+                  ),
                 ],
               ),
             ),

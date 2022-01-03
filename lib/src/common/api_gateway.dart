@@ -26,6 +26,7 @@ class ApiGateway {
   static const String cancelOrder = "order/cancel";
   static const String createOrderOnline = "payment/order";
   static const String paymentOrderSuccess = "payment/success";
+  static const String refundPayment = "payment/refund";
 
   // coupon
   static const String getDataCoupon = "coupon/get-all";

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_store/src/models/order_model.dart';
+import 'package:mobile_store/src/models/tab_model.dart';
 import 'package:mobile_store/src/repository/order_repository.dart';
 import 'package:mobile_store/src/widgets/order_card_widget.dart';
 
@@ -54,10 +55,20 @@ class _HistoryOrderScreenState extends State<HistoryOrderScreen> {
     });
   }
 
+  List<TabModel> _tabsValue = [];
+
   @override
   void initState() {
     super.initState();
     getDataOrder();
+    _tabsValue = [
+      TabModel(title: "Chờ xác nhận", icon: Icons.history, width: 100),
+      TabModel(
+          title: "Chờ lấy hàng", icon: Icons.lock_clock_rounded, width: 100),
+      TabModel(title: "Đang giao", icon: Icons.bike_scooter, width: 80),
+      TabModel(title: "Đã giao", icon: Icons.check_circle, width: 70),
+      TabModel(title: "Đã hủy", icon: Icons.cancel, width: 70),
+    ];
   }
 
   // wiget Chờ lấy hàng
@@ -252,29 +263,21 @@ class _HistoryOrderScreenState extends State<HistoryOrderScreen> {
           elevation: 20,
           titleSpacing: 20,
           bottom: TabBar(
+            isScrollable: true,
             labelColor: Colors.white,
             indicatorColor: Colors.red,
             tabs: [
-              Tab(
-                icon: Icon(Icons.history),
-                text: "Chờ xác nhận",
-              ),
-              Tab(
-                icon: Icon(Icons.lock_clock_rounded),
-                text: "Chờ lấy hàng",
-              ),
-              Tab(
-                icon: Icon(Icons.bike_scooter),
-                text: "Đang giao",
-              ),
-              Tab(
-                icon: Icon(Icons.check_circle),
-                text: "Đã giao",
-              ),
-              Tab(
-                icon: Icon(Icons.cancel),
-                text: "Đã hủy",
-              ),
+              ..._tabsValue
+                  .map(
+                    (e) => Container(
+                      width: e.width,
+                      child: Tab(
+                        text: e.title,
+                        icon: Icon(e.icon),
+                      ),
+                    ),
+                  )
+                  .toList(),
             ],
           ),
         ),
