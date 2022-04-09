@@ -78,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             TextFormField(
                               controller: email,
                               validator: (value) {
-                                if (value!.isEmpty) {
+                                if (value == null) {
                                   return "Email not empty";
                                 }
                                 return null;
@@ -92,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             TextFormField(
                               controller: pass,
                               validator: (value) {
-                                if (value!.isEmpty) {
+                                if (value == null) {
                                   return "Password not empty";
                                 }
                                 return null;

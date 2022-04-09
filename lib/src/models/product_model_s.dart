@@ -78,7 +78,7 @@ class ProductModel {
       description: map['description'],
       name: map['name'],
       idModel: map['idModel'],
-      capacity: map['capacity'],
+      capacity: map['capacity'] ?? '',
       ram: map['ram'],
       color: List<ColorModel>.from(
           map['color']?.map((x) => ColorModel.fromMap(x))),

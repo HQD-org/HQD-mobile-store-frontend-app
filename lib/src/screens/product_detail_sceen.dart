@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_store/src/models/product_model_s.dart';
 import 'package:mobile_store/src/providers/user_provider.dart';
 import 'package:mobile_store/src/repository/cart_repository.dart';
+import 'package:mobile_store/src/screens/cart/cart_screen.dart';
 import 'package:provider/provider.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -152,7 +153,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         actions: [
           IconButton(
               onPressed: () {
-                print("Giỏ hàng");
+                //print("Giỏ hàng");
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => CartScreen()));
               },
               icon: Icon(Icons.shopping_cart))
         ],

@@ -8,7 +8,7 @@ class ApiGateway {
   static const String updateProfile = "user/update";
 
   // Brand
-  static const String getAllBrand = "mobile-brand/get-all";
+  static const String getAllBrand = "mobile-brand/get-all-active";
 
   // Product
   static const String getAllProduct = "product/get-all";

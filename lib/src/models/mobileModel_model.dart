@@ -96,7 +96,7 @@ class MobileModel {
 
   factory MobileModel.fromMap(Map<String, dynamic> map) {
     return MobileModel(
-      id: map['id'],
+      id: map['_id'],
       memoryStick: map['memoryStick'],
       status: map['status'],
       description: map['description'],

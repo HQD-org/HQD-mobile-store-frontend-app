@@ -19,6 +19,7 @@ class CouponRepository {
   Future<CouponModel?> getDataCouponByName(String param) async {
     http.Response response =
         await BaseRepository().get(ApiGateway.getDataCouponByName, param);
+    print(response.statusCode);
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body)['data'];
       return CouponModel.fromMap(jsonResponse);

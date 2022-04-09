@@ -45,7 +45,9 @@ class CartRepository {
     Response response = await BaseRepository().get(ApiGateway.getDataCart);
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body)['data'];
-      //print("dataP: " + jsonResponse.toString());
+      if (jsonResponse.toString() == '[]') {
+        return null;
+      }
       return CartModel?.fromMap(jsonResponse);
     }
     return null;

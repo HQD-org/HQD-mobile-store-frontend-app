@@ -450,6 +450,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             side: BorderSide(color: Colors.blue),
                             primary: Colors.white),
                         onPressed: () async {
+                          print(coupon.text.trim());
                           CouponModel? getCoupon = await CouponRepository()
                               .getDataCouponByName(
                                   'name=${coupon.text.trim()}');
@@ -471,6 +472,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                   price = stemp + 30000;
                                 }
                               } else {
+                                print("Giá trị đơn ko đủ để dùng coupon");
                                 snackBar(
                                     "Đơn hàng không đáp ứng điều kiện của mã giảm giá");
                               }
