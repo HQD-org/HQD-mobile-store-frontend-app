@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mobile_store/src/common/shared_preference_user.dart';
 
-const root_url = "hqd-mobile-store-api.herokuapp.com";
+ const root_url = "hqd-mobile-store-api.herokuapp.com";
+// const root_url = "localhost:8080";
 
 class BaseRepository {
   get(String name, [String? params]) async {
